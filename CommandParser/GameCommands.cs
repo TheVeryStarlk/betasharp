@@ -5,12 +5,12 @@ using betareborn.Entities;
 
 namespace betareborn.CommandParser;
 
-public class CommandParser {
+public class GameCommands {
     public static Dictionary<string, int> allItems = new();
     public static Dictionary<int, Block> blocks = new();
     public static Dictionary<int, Item> items = new();
 
-    public CommandParser() {
+    public GameCommands() {
         { // Get blocks
             var fields = typeof(Block).GetFields(BindingFlags.Static | BindingFlags.Public)
                 .Where(f => f.FieldType == typeof(Block))
@@ -18,7 +18,7 @@ public class CommandParser {
             fields.ForEach(x => {
                 var block = ((Block)x.GetValue(null));
                 var id = block.blockID;
-                allItems.TryAdd(x.Name, id);
+                allItems.TryAdd(x.Name.ToLower(), id);
                 blocks.TryAdd(id, block);
             });
         }
@@ -31,7 +31,7 @@ public class CommandParser {
             fields.ForEach(x => {
                 var item = ((Item)x.GetValue(null));
                 var id = item.shiftedIndex;
-                allItems.TryAdd(x.Name, id);
+                allItems.TryAdd(x.Name.ToLower(), id);
                 items.TryAdd(id, item);
             });
         }
