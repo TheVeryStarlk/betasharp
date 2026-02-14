@@ -26,9 +26,7 @@ public static class NbtIo
 
     public static NBTTagCompound Read(DataInput input)
     {
-        var tag = NBTBase.ReadTag(input);
-
-        if (tag is NBTTagCompound compound)
+        if (NBTBase.ReadTag(input) is NBTTagCompound compound)
         {
             return compound;
         }
