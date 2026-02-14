@@ -194,9 +194,9 @@ public class RegionFile : java.lang.Object
         }
     }
 
-    public DataOutputStream getChunkDataOutputStream(int var1, int var2)
+    public Stream getChunkDataOutputStream(int var1, int var2)
     {
-        return outOfBounds(var1, var2) ? null : new DataOutputStream(new DeflaterOutputStream(new RegionFileChunkBuffer(this, var1, var2)));
+        return outOfBounds(var1, var2) ? null : new JavaOutputStreamWrapper(new DeflaterOutputStream(new RegionFileChunkBuffer(this, var1, var2)));
     }
 
     public void write(int var1, int var2, byte[] var3, int var4)
