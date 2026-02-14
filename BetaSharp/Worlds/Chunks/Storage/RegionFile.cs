@@ -196,7 +196,21 @@ public class RegionFile : java.lang.Object
 
     public Stream getChunkDataOutputStream(int var1, int var2)
     {
-        return outOfBounds(var1, var2) ? null : new DeflateStream(new RegionFileChunkBuffer(this, var1, var2), CompressionMode.Compress, leaveOpen: false);
+        if (outOfBounds(var1, var2))
+        {
+            return null;
+        }
+
+        var buffer = new RegionFileChunkBuffer(this, var1, var2);
+        try
+        {
+            return new DeflateStream(buffer, CompressionMode.Compress, leaveOpen: false);
+        }
+        catch
+        {
+            buffer.Dispose();
+            throw;
+        }
     }
 
     public void write(int var1, int var2, byte[] var3, int var4)

@@ -62,13 +62,14 @@ public class RegionChunkStorage : ChunkStorage
     {
         try
         {
-            Stream var3 = RegionIo.getChunkOutputStream(dir, chunk.x, chunk.z);
-            NBTTagCompound var4 = new();
-            NBTTagCompound var5 = new();
-            var4.SetTag("Level", var5);
-            storeChunkInCompound(chunk, world, var5);
-            NbtIo.Write(var4, var3);
-            var3.Close();
+            using (Stream var3 = RegionIo.getChunkOutputStream(dir, chunk.x, chunk.z))
+            {
+                NBTTagCompound var4 = new();
+                NBTTagCompound var5 = new();
+                var4.SetTag("Level", var5);
+                storeChunkInCompound(chunk, world, var5);
+                NbtIo.Write(var4, var3);
+            }
             WorldProperties var6 = world.getProperties();
             var6.setSizeOnDisk(var6.getSizeOnDisk() + (long)RegionIo.getSizeDelta(dir, chunk.x, chunk.z));
         }
