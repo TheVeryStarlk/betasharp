@@ -15,11 +15,17 @@ public class RegionFileChunkBuffer : MemoryStream
 
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
+        try
         {
-            byte[] buffer = ToArray();
-            regionFile.write(chunkX, chunkZ, buffer, buffer.Length);
+            if (disposing)
+            {
+                byte[] buffer = ToArray();
+                regionFile.write(chunkX, chunkZ, buffer, buffer.Length);
+            }
         }
-        base.Dispose(disposing);
+        finally
+        {
+            base.Dispose(disposing);
+        }
     }
 }
