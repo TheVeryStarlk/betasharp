@@ -60,9 +60,19 @@ public class JavaOutputStreamWrapper : Stream
         {
             if (disposing)
             {
-                javaStream.close();
+                try
+                {
+                    javaStream.close();
+                }
+                finally
+                {
+                    disposed = true;
+                }
             }
-            disposed = true;
+            else
+            {
+                disposed = true;
+            }
         }
         base.Dispose(disposing);
     }
