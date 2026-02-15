@@ -1,6 +1,17 @@
 ﻿<Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BetaSharp.Launcher.ViewModels"
+             xmlns:views="using:BetaSharp.Launcher.Views"
              x:Class="BetaSharp.Launcher.App">
+    <Application.DataTemplates>
+        <DataTemplate DataType="vm:LoginViewModel">
+            <views:LoginView />
+        </DataTemplate>
+        <DataTemplate DataType="vm:JarSelectionViewModel">
+            <views:JarSelectionView />
+        </DataTemplate>
+    </Application.DataTemplates>
+    
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
