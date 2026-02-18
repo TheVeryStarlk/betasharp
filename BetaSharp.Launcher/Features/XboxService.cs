@@ -1,34 +1,45 @@
 ﻿using System;
 using System.Net.Http;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using BetaSharp.Launcher.Features.Extensions;
+using Refit;
 
 namespace BetaSharp.Launcher.Features;
 
-internal sealed class XboxService(HttpClient client)
+internal sealed class XboxService
 {
+    private readonly IXboxApi _userAuthApi;
+    private readonly IXboxApi _xstsAuthApi;
+
+    public XboxService(IHttpClientFactory httpClientFactory)
+    {
+        _userAuthApi = RestService.For<IXboxApi>(httpClientFactory.CreateClient("XboxUserAuth"));
+        _xstsAuthApi = RestService.For<IXboxApi>(httpClientFactory.CreateClient("XboxXsts"));
+    }
+
     public async Task<(string Token, string Hash)> GetAsync(string microsoft)
     {
-        var profileRequest = new { Properties = new { AuthMethod = "RPS", SiteName = "user.auth.xboxlive.com", RpsTicket = $"d={microsoft}" }, RelyingParty = "http://auth.xboxlive.com", TokenType = "JWT" };
-        var profileResponse = await client.PostAsync("https://user.auth.xboxlive.com/user/authenticate", profileRequest);
+        var userAuthRequest = new XboxUserAuthRequest(
+            Properties: new { AuthMethod = "RPS", SiteName = "user.auth.xboxlive.com", RpsTicket = $"d={microsoft}" },
+            RelyingParty: "http://auth.xboxlive.com",
+            TokenType: "JWT"
+        );
 
-        await using var stream = await profileResponse.Content.ReadAsStreamAsync();
+        var userAuthResponse = await _userAuthApi.AuthenticateUserAsync(userAuthRequest);
 
-        var node = await JsonNode.ParseAsync(stream);
-        string? token = node?["Token"]?.GetValue<string>();
+        string token = userAuthResponse.Token;
+        string hash = userAuthResponse.DisplayClaims.xui[0].uhs;
 
         ArgumentException.ThrowIfNullOrWhiteSpace(token);
-
-        string? hash = node?["DisplayClaims"]?["xui"]?[0]?["uhs"]?.GetValue<string>();
-
         ArgumentException.ThrowIfNullOrWhiteSpace(hash);
 
-        var securityRequest = new { Properties = new { SandboxId = "RETAIL", UserTokens = new[] { token } }, RelyingParty = "rp://api.minecraftservices.com/", TokenType = "JWT" };
-        var securityResponse = await client.PostAsync("https://xsts.auth.xboxlive.com/xsts/authorize", securityRequest);
+        var xstsAuthRequest = new XstsAuthRequest(
+            Properties: new { SandboxId = "RETAIL", UserTokens = new[] { token } },
+            RelyingParty: "rp://api.minecraftservices.com/",
+            TokenType: "JWT"
+        );
 
-        securityResponse.EnsureSuccessStatusCode();
+        var xstsAuthResponse = await _xstsAuthApi.AuthorizeXstsAsync(xstsAuthRequest);
 
-        return (await securityResponse.Content.GetValueAsync("Token"), hash);
+        return (xstsAuthResponse.Token, hash);
     }
 }

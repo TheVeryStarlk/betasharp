@@ -37,8 +37,13 @@ internal static class Bootstrapper
             builder.AddSerilog(logger, true);
         });
 
-        services.AddHttpClient<MinecraftService>();
-        services.AddHttpClient<XboxService>();
+        services.AddHttpClient("XboxUserAuth", c => c.BaseAddress = new Uri("https://user.auth.xboxlive.com"));
+        services.AddHttpClient("XboxXsts", c => c.BaseAddress = new Uri("https://xsts.auth.xboxlive.com"));
+        services.AddHttpClient("MinecraftApi", c => c.BaseAddress = new Uri("https://api.minecraftservices.com"));
+        services.AddHttpClient();
+
+        services.AddSingleton<MinecraftService>();
+        services.AddSingleton<XboxService>();
 
         services.AddSingleton<ViewLocator>();
 
