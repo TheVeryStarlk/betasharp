@@ -24,12 +24,19 @@ internal sealed class MinecraftService
     {
         var profile = await _api.GetProfileAsync($"Bearer {token}");
 
-        string name = profile.name;
-        string id = profile.id;
-        string skin = profile.skins[0].url;
+        string name = profile.Name;
+        string id = profile.Id;
 
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentException.ThrowIfNullOrWhiteSpace(id);
+
+        if (profile.Skins.Length == 0)
+        {
+            throw new InvalidOperationException("Minecraft profile contained no skins.");
+        }
+
+        string skin = profile.Skins[0].Url;
+
         ArgumentException.ThrowIfNullOrWhiteSpace(skin);
 
         var image = await _httpClient.GetStreamAsync(skin);
@@ -42,10 +49,10 @@ internal sealed class MinecraftService
 
     public async Task<string> GetTokenAsync(string token, string hash)
     {
-        var request = new MinecraftAuthRequest(identityToken: $"XBL3.0 x={hash};{token}");
+        var request = new MinecraftAuthRequest(IdentityToken: $"XBL3.0 x={hash};{token}");
         var response = await _api.LoginWithXboxAsync(request);
 
-        return response.access_token;
+        return response.AccessToken;
     }
 
     public async Task DownloadAsync()

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Refit;
 
@@ -13,19 +14,19 @@ internal interface IMinecraftApi
 }
 
 internal record MinecraftAuthRequest(
-    string identityToken
+    [property: JsonPropertyName("identityToken")] string IdentityToken
 );
 
 internal record MinecraftAuthResponse(
-    string access_token
+    [property: JsonPropertyName("access_token")] string AccessToken
 );
 
 internal record MinecraftProfileResponse(
-    string name,
-    string id,
-    MinecraftSkin[] skins
+    [property: JsonPropertyName("name")] string Name,
+    [property: JsonPropertyName("id")] string Id,
+    [property: JsonPropertyName("skins")] MinecraftSkin[] Skins
 );
 
 internal record MinecraftSkin(
-    string url
+    [property: JsonPropertyName("url")] string Url
 );

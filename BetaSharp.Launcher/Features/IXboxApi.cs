@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Refit;
 
@@ -24,11 +25,11 @@ internal record XboxUserAuthResponse(
 );
 
 internal record DisplayClaims(
-    Xui[] xui
+    [property: JsonPropertyName("xui")] Xui[] Xui
 );
 
 internal record Xui(
-    string uhs
+    [property: JsonPropertyName("uhs")] string Uhs
 );
 
 internal record XstsAuthRequest(

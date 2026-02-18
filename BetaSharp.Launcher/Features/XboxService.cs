@@ -27,9 +27,16 @@ internal sealed class XboxService
         var userAuthResponse = await _userAuthApi.AuthenticateUserAsync(userAuthRequest);
 
         string token = userAuthResponse.Token;
-        string hash = userAuthResponse.DisplayClaims.xui[0].uhs;
 
         ArgumentException.ThrowIfNullOrWhiteSpace(token);
+
+        if (userAuthResponse.DisplayClaims.Xui.Length == 0)
+        {
+            throw new InvalidOperationException("Xbox authentication response contained no user claims.");
+        }
+
+        string hash = userAuthResponse.DisplayClaims.Xui[0].Uhs;
+
         ArgumentException.ThrowIfNullOrWhiteSpace(hash);
 
         var xstsAuthRequest = new XstsAuthRequest(
