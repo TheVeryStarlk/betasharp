@@ -55,7 +55,7 @@ public class InternalConnection : Connection
         }
         if (count > 0)
         {
-            // Console.WriteLine($"[{Name}] Processed {count} packets");
+            // Log.Info($"[{Name}] Processed {count} packets");
         }
     }
 
@@ -78,7 +78,7 @@ public class InternalConnection : Connection
             this.disconnectedReason = disconnectedReason;
             this.disconnectReasonArgs = disconnectReasonArgs;
 
-            Console.WriteLine($"[{Name}] Disconnected: {disconnectedReason}");
+            Log.Info($"[{Name}] Disconnected: {disconnectedReason}");
 
             if (RemoteConnection != null && RemoteConnection.open)
             {
@@ -95,13 +95,13 @@ public class InternalConnection : Connection
             disconnected = true;
             disconnectedReason = reason;
             disconnectReasonArgs = args;
-            Console.WriteLine($"[{Name}] Remote disconnected: {reason}");
+            Log.Info($"[{Name}] Remote disconnected: {reason}");
         }
     }
 
     public override void disconnect()
     {
-        disconnect("Disconnecting", []);
+        disconnect("Disconnecting");
     }
 
     public override void interrupt()
