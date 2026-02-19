@@ -23,18 +23,18 @@ public class ChunkStatusUpdateS2CPacket : Packet
         this.load = load;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        x = stream.readInt();
-        z = stream.readInt();
-        load = stream.read() != 0;
+        x = stream.ReadInt();
+        z = stream.ReadInt();
+        load = stream.ReadBoolean();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeInt(x);
-        stream.writeInt(z);
-        stream.write(load ? 1 : 0);
+        stream.WriteInt(x);
+        stream.WriteInt(z);
+        stream.WriteBoolean(load);
     }
 
     public override void apply(NetHandler handler)

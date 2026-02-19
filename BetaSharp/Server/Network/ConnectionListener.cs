@@ -1,7 +1,8 @@
+using System.Net;
+using System.Net.Sockets;
 using BetaSharp.Network;
 using BetaSharp.Server.Threading;
 using java.lang;
-using java.net;
 using java.util.logging;
 
 namespace BetaSharp.Server.Network;
@@ -9,7 +10,7 @@ namespace BetaSharp.Server.Network;
 public class ConnectionListener
 {
     public static readonly Logger LOGGER = Logger.getLogger("Minecraft");
-    public ServerSocket socket;
+    public Socket socket;
     private readonly java.lang.Thread _thread;
     public volatile bool open = false;
     public int connectionCounter = 0;
@@ -18,12 +19,14 @@ public class ConnectionListener
     public MinecraftServer server;
     public int port;
 
-    public ConnectionListener(MinecraftServer server, InetAddress address, int port)
+    public ConnectionListener(MinecraftServer server, IPAddress address, int port)
     {
         this.server = server;
-        socket = new ServerSocket(port, 0, address);
-        socket.setPerformancePreferences(0, 2, 1);
-        this.port = socket.getLocalPort();
+        socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
+        var endpoint = new IPEndPoint(address, port);
+        socket.Bind(endpoint);
+        socket.Listen();
+        this.port = ((IPEndPoint)socket.LocalEndPoint!).Port;
         open = true;
         _thread = new AcceptConnectionThread(this, "Listen Thread");
         _thread.start();

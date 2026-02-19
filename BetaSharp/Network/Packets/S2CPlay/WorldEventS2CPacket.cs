@@ -25,22 +25,22 @@ public class WorldEventS2CPacket : Packet
         this.data = data;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        eventId = stream.readInt();
-        x = stream.readInt();
-        y = (sbyte)stream.readByte();
-        z = stream.readInt();
-        data = stream.readInt();
+        eventId = stream.ReadInt();
+        x = stream.ReadInt();
+        y = (sbyte)stream.ReadByte();
+        z = stream.ReadInt();
+        data = stream.ReadInt();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeInt(eventId);
-        stream.writeInt(x);
-        stream.writeByte(y);
-        stream.writeInt(z);
-        stream.writeInt(data);
+        stream.WriteInt(eventId);
+        stream.WriteInt(x);
+        stream.WriteByte((sbyte)y);
+        stream.WriteInt(z);
+        stream.WriteInt(data);
     }
 
     public override void apply(NetHandler handler)

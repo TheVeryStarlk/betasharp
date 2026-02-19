@@ -1,3 +1,4 @@
+using BetaSharp.NBT;
 using java.io;
 
 namespace BetaSharp.Network.Packets;
@@ -31,20 +32,20 @@ public class LoginHelloPacket : Packet
         this.protocolVersion = protocolVersion;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        protocolVersion = stream.readInt();
-        username = readString(stream, 16);
-        worldSeed = stream.readLong();
-        dimensionId = (sbyte)stream.readByte();
+        protocolVersion = stream.ReadInt();
+        username = stream.ReadString(16);
+        worldSeed = stream.ReadLong();
+        dimensionId = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeInt(protocolVersion);
-        writeString(username, stream);
-        stream.writeLong(worldSeed);
-        stream.writeByte(dimensionId);
+        stream.WriteInt(protocolVersion);
+        stream.WriteString(username);
+        stream.WriteLong(worldSeed);
+        stream.WriteByte(dimensionId);
     }
 
     public override void apply(NetHandler handler)

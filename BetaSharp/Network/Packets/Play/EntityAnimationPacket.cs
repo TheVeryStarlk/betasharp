@@ -20,16 +20,16 @@ public class EntityAnimationPacket : Packet
         this.animationId = animationId;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        id = stream.readInt();
-        animationId = (sbyte)stream.readByte();
+        id = stream.ReadInt();
+        animationId = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeInt(id);
-        stream.writeByte(animationId);
+        stream.WriteInt(id);
+        stream.WriteByte((byte)animationId);
     }
 
     public override void apply(NetHandler handler)

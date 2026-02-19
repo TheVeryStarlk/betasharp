@@ -1,3 +1,4 @@
+using BetaSharp.NBT;
 using java.io;
 
 namespace BetaSharp.Network.Packets;
@@ -17,14 +18,14 @@ public class HandshakePacket : Packet
         this.username = username;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        username = readString(stream, 32);
+        username = stream.ReadString( 32);
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        writeString(username, stream);
+        stream.WriteString(username);
     }
 
     public override void apply(NetHandler handler)

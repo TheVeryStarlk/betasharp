@@ -22,14 +22,14 @@ public class CloseScreenS2CPacket : Packet
         handler.onCloseScreen(this);
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        windowId = (sbyte)stream.readByte();
+        windowId = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeByte(windowId);
+        stream.WriteByte((byte)windowId);
     }
 
     public override int size()

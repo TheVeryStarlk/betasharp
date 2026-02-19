@@ -22,14 +22,14 @@ public class PlayerRespawnPacket : Packet
         handler.onPlayerRespawn(this);
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        dimensionId = (sbyte)stream.readByte();
+        dimensionId = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeByte(dimensionId);
+        stream.WriteByte(dimensionId);
     }
 
     public override int size()

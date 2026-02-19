@@ -19,16 +19,16 @@ public class EntityStatusS2CPacket : Packet
         entityStatus = (sbyte)status;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        entityId = stream.readInt();
-        entityStatus = (sbyte)stream.readByte();
+        entityId = stream.ReadInt();
+        entityStatus = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeInt(entityId);
-        stream.writeByte(entityStatus);
+        stream.WriteInt(entityId);
+        stream.WriteByte(entityStatus);
     }
 
     public override void apply(NetHandler handler)

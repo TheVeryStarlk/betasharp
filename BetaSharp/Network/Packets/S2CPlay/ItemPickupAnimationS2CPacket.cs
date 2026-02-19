@@ -19,16 +19,16 @@ public class ItemPickupAnimationS2CPacket : Packet
         collectorEntityId = collectorId;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        entityId = stream.readInt();
-        collectorEntityId = stream.readInt();
+        entityId = stream.ReadInt();
+        collectorEntityId = stream.ReadInt();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeInt(entityId);
-        stream.writeInt(collectorEntityId);
+        stream.WriteInt(entityId);
+        stream.WriteInt(collectorEntityId);
     }
 
     public override void apply(NetHandler handler)

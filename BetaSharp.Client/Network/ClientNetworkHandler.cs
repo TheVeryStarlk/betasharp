@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Sockets;
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Entities;
@@ -19,6 +21,7 @@ using BetaSharp.Worlds.Chunks;
 using BetaSharp.Worlds.Storage;
 using java.io;
 using java.net;
+using Socket = System.Net.Sockets.Socket;
 
 namespace BetaSharp.Client.Network;
 
@@ -37,8 +40,10 @@ public class ClientNetworkHandler : NetHandler
     {
 
         this.mc = mc;
-        Socket socket = new(InetAddress.getByName(address), port);
-        socket.setTcpNoDelay(true);
+
+        Socket socket = new(SocketType.Stream, ProtocolType.Tcp);
+        // socket.setTcpNoDelay(true);
+        socket.Connect(address, port);
         netManager = new Connection(socket, "Client", this);
     }
 

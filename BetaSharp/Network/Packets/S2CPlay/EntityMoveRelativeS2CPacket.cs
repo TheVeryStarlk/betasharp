@@ -17,20 +17,20 @@ public class EntityMoveRelativeS2CPacket : EntityS2CPacket
         this.deltaZ = (sbyte)deltaZ;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
         base.read(stream);
-        deltaX = (sbyte)stream.readByte();
-        deltaY = (sbyte)stream.readByte();
-        deltaZ = (sbyte)stream.readByte();
+        deltaX = (sbyte)stream.ReadByte();
+        deltaY = (sbyte)stream.ReadByte();
+        deltaZ = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
         base.write(stream);
-        stream.writeByte(deltaX);
-        stream.writeByte(deltaY);
-        stream.writeByte(deltaZ);
+        stream.WriteByte(deltaX);
+        stream.WriteByte(deltaY);
+        stream.WriteByte(deltaZ);
     }
 
     public override int size()

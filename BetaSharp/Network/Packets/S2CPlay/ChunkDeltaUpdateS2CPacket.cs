@@ -42,11 +42,11 @@ public class ChunkDeltaUpdateS2CPacket : Packet
         }
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        x = stream.readInt();
-        z = stream.readInt();
-        _size = stream.readShort() & '\uffff';
+        x = stream.ReadInt();
+        z = stream.ReadInt();
+        _size = stream.ReadShort() & '\uffff';
         positions = new short[_size];
 
         blockRawIds = new byte[_size];
@@ -54,26 +54,26 @@ public class ChunkDeltaUpdateS2CPacket : Packet
 
         for (int i = 0; i < _size; ++i)
         {
-            positions[i] = stream.readShort();
+            positions[i] = stream.ReadShort();
         }
 
-        stream.readFully(blockRawIds);
-        stream.readFully(blockMetadata);
+        stream.ReadExactly(blockRawIds);
+        stream.ReadExactly(blockMetadata);
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeInt(x);
-        stream.writeInt(z);
-        stream.writeShort((short)_size);
+        stream.WriteInt(x);
+        stream.WriteInt(z);
+        stream.WriteShort((short)_size);
 
         for (int i = 0; i < _size; ++i)
         {
-            stream.writeShort(positions[i]);
+            stream.WriteShort(positions[i]);
         }
 
-        stream.write(blockRawIds);
-        stream.write(blockMetadata);
+        stream.Write(blockRawIds);
+        stream.Write(blockMetadata);
     }
 
     public override void apply(NetHandler handler)

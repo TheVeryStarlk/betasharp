@@ -20,16 +20,16 @@ public class ClientCommandC2SPacket : Packet
         this.mode = mode;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        entityId = stream.readInt();
-        mode = (sbyte)stream.readByte();
+        entityId = stream.ReadInt();
+        mode = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeInt(entityId);
-        stream.writeByte(mode);
+        stream.WriteInt(entityId);
+        stream.WriteByte((byte)mode);
     }
 
     public override void apply(NetHandler handler)

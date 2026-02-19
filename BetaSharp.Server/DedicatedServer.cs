@@ -1,3 +1,4 @@
+using System.Net;
 using BetaSharp.Launcher;
 using BetaSharp.Server.Network;
 using BetaSharp.Server.Threading;
@@ -30,10 +31,10 @@ public class DedicatedServer(IServerConfiguration config) : MinecraftServer(conf
         LOGGER.info("Loading properties");
 
         string var2 = config.GetServerIp("");
-        InetAddress var3 = null;
+        IPAddress var3 = null;
         if (var2.Length > 0)
         {
-            var3 = InetAddress.getByName(var2);
+            var3 = IPAddress.Parse(var2);
         }
 
         int var4 = config.GetServerPort(25565);

@@ -30,14 +30,14 @@ public class PlayerMovePacket : Packet
         handler.onPlayerMove(this);
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        onGround = stream.read() != 0;
+        onGround = stream.ReadBoolean();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.write(onGround ? 1 : 0);
+        stream.WriteBoolean(onGround);
     }
 
     public override int size()

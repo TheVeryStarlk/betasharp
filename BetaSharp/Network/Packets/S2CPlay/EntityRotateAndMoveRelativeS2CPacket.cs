@@ -21,24 +21,24 @@ public class EntityRotateAndMoveRelativeS2CPacket : EntityS2CPacket
         rotate = true;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
         base.read(stream);
-        deltaX = (sbyte)stream.readByte();
-        deltaY = (sbyte)stream.readByte();
-        deltaZ = (sbyte)stream.readByte();
-        yaw = (sbyte)stream.readByte();
-        pitch = (sbyte)stream.readByte();
+        deltaX = (sbyte)stream.ReadByte();
+        deltaY = (sbyte)stream.ReadByte();
+        deltaZ = (sbyte)stream.ReadByte();
+        yaw = (sbyte)stream.ReadByte();
+        pitch = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
         base.write(stream);
-        stream.writeByte(deltaX);
-        stream.writeByte(deltaY);
-        stream.writeByte(deltaZ);
-        stream.writeByte(yaw);
-        stream.writeByte(pitch);
+        stream.WriteByte(deltaX);
+        stream.WriteByte(deltaY);
+        stream.WriteByte(deltaZ);
+        stream.WriteByte(yaw);
+        stream.WriteByte(pitch);
     }
 
     public override int size()

@@ -17,14 +17,14 @@ public class UpdateSelectedSlotC2SPacket : Packet
         this.selectedSlot = selectedSlot;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        selectedSlot = stream.readShort();
+        selectedSlot = stream.ReadShort();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeShort(selectedSlot);
+        stream.WriteShort((short)selectedSlot);
     }
 
     public override void apply(NetHandler handler)

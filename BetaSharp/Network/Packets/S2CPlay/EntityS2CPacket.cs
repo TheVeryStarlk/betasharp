@@ -22,14 +22,14 @@ public class EntityS2CPacket : Packet
     {
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        id = stream.readInt();
+        id = stream.ReadInt();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeInt(id);
+        stream.WriteInt(id);
     }
 
     public override void apply(NetHandler handler)

@@ -10,11 +10,11 @@ public class KeepAlivePacket : Packet
     {
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
     }
 

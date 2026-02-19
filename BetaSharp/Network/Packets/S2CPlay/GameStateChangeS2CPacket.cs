@@ -18,14 +18,14 @@ public class GameStateChangeS2CPacket : Packet
         this.reason = reason;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        reason = (sbyte)stream.readByte();
+        reason = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeByte(reason);
+        stream.WriteByte((byte)reason);
     }
 
     public override void apply(NetHandler handler)

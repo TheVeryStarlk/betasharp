@@ -65,7 +65,7 @@ public abstract class Packet : java.lang.Object
         return ((Integer)TYPE_TO_ID.get(getClass())).intValue();
     }
 
-    public static Packet read(DataInputStream stream, bool server)
+    public static Packet read(Stream stream, bool server)
     {
         Packet packet = null;
 
@@ -73,7 +73,7 @@ public abstract class Packet : java.lang.Object
         int rawId;
         try
         {
-            rawId = stream.read();
+            rawId = stream.ReadInt();
             if (rawId == -1)
             {
                 return null;
@@ -114,53 +114,15 @@ public abstract class Packet : java.lang.Object
         return packet;
     }
 
-    public static void write(Packet packet, DataOutputStream stream)
+    public static void write(Packet packet, Stream stream)
     {
-        stream.write(packet.getRawId());
+        stream.WriteInt(packet.getRawId());
         packet.write(stream);
     }
 
-    public static void writeString(string packetData, DataOutputStream stream)
-    {
-        if (packetData.Length > Short.MAX_VALUE)
-        {
-            throw new java.io.IOException("String too big");
-        }
-        else
-        {
-            stream.writeShort(packetData.Length);
-            stream.writeChars(packetData);
-        }
-    }
+    public abstract void read(Stream stream);
 
-    public static string readString(DataInputStream stream, int maxLength)
-    {
-
-        short length = stream.readShort();
-        if (length > maxLength)
-        {
-            throw new java.io.IOException("Received string length longer than maximum allowed (" + length + " > " + maxLength + ")");
-        }
-        else if (length < 0)
-        {
-            throw new java.io.IOException("Received string length is less than zero! Weird string!");
-        }
-        else
-        {
-            StringBuilder sb = new StringBuilder();
-
-            for (int var4 = 0; var4 < length; ++var4)
-            {
-                sb.append(stream.readChar());
-            }
-
-            return sb.toString();
-        }
-    }
-
-    public abstract void read(DataInputStream stream);
-
-    public abstract void write(DataOutputStream stream);
+    public abstract void write(Stream stream);
 
     public abstract void apply(NetHandler handler);
 

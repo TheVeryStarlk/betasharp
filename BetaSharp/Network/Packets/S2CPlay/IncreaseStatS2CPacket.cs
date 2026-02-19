@@ -24,16 +24,16 @@ public class IncreaseStatS2CPacket : Packet
         handler.onIncreaseStat(this);
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        statId = stream.readInt();
-        amount = (sbyte)stream.readByte();
+        statId = stream.ReadInt();
+        amount = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeInt(statId);
-        stream.writeByte(amount);
+        stream.WriteInt(statId);
+        stream.WriteByte((byte)amount);
     }
 
     public override int size()

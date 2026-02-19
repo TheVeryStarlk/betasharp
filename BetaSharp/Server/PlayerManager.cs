@@ -109,7 +109,7 @@ public class PlayerManager
         }
         else
         {
-            string var3 = loginNetworkHandler.connection.getAddress().toString();
+            string var3 = loginNetworkHandler.connection.getAddress().ToString();
             var3 = var3.Substring(var3.IndexOf("/") + 1);
             var3 = var3.Substring(0, var3.IndexOf(":"));
             if (bannedIps.Contains(var3))

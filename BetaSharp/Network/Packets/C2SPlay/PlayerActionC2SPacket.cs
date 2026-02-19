@@ -25,22 +25,22 @@ public class PlayerActionC2SPacket : Packet
         this.direction = direction;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        action = stream.read();
-        x = stream.readInt();
-        y = stream.read();
-        z = stream.readInt();
-        direction = stream.read();
+        action = stream.ReadInt();
+        x = stream.ReadInt();
+        y = stream.ReadInt();
+        z = stream.ReadInt();
+        direction = stream.ReadInt();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.write(action);
-        stream.writeInt(x);
-        stream.write(y);
-        stream.writeInt(z);
-        stream.write(direction);
+        stream.WriteInt(action);
+        stream.WriteInt(x);
+        stream.WriteInt(y);
+        stream.WriteInt(z);
+        stream.WriteInt(direction);
     }
 
     public override void apply(NetHandler handler)

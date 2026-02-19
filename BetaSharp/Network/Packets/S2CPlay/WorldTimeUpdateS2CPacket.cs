@@ -17,14 +17,14 @@ public class WorldTimeUpdateS2CPacket : Packet
         this.time = time;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        time = stream.readLong();
+        time = stream.ReadLong();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeLong(time);
+        stream.WriteLong(time);
     }
 
     public override void apply(NetHandler handler)

@@ -1,3 +1,4 @@
+using System.Net.Sockets;
 using BetaSharp.Entities;
 using BetaSharp.Network;
 using BetaSharp.Network.Packets;
@@ -7,7 +8,6 @@ using BetaSharp.Server.Internal;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using java.lang;
-using java.net;
 using java.util.logging;
 
 namespace BetaSharp.Server.Network;
@@ -162,7 +162,7 @@ public class ServerLoginNetworkHandler : NetHandler
     public string getConnectionInfo()
     {
         if (connection.getAddress() == null) return "Internal";
-        return username != null ? username + " [" + connection.getAddress()!.toString() + "]" : connection.getAddress()!.toString();
+        return username != null ? username + " [" + connection.getAddress()! + "]" : connection.getAddress()!.ToString();
     }
 
     public override bool isServerSide()

@@ -17,14 +17,14 @@ public class EntityDestroyS2CPacket : Packet
         entityId = id;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        entityId = stream.readInt();
+        entityId = stream.ReadInt();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeInt(entityId);
+        stream.WriteInt(entityId);
     }
 
     public override void apply(NetHandler handler)

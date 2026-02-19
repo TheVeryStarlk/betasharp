@@ -1,4 +1,5 @@
 using BetaSharp.Entities;
+using BetaSharp.NBT;
 using java.io;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
@@ -28,24 +29,24 @@ public class PaintingEntitySpawnS2CPacket : Packet
         title = paint.art.title;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        entityId = stream.readInt();
-        title = readString(stream, EnumArt.maxArtTitleLength);
-        xPosition = stream.readInt();
-        yPosition = stream.readInt();
-        zPosition = stream.readInt();
-        direction = stream.readInt();
+        entityId = stream.ReadInt();
+        title = stream.ReadString(EnumArt.maxArtTitleLength);
+        xPosition = stream.ReadInt();
+        yPosition = stream.ReadInt();
+        zPosition = stream.ReadInt();
+        direction = stream.ReadInt();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeInt(entityId);
-        writeString(title, stream);
-        stream.writeInt(xPosition);
-        stream.writeInt(yPosition);
-        stream.writeInt(zPosition);
-        stream.writeInt(direction);
+        stream.WriteInt(entityId);
+        stream.WriteString(title);
+        stream.WriteInt(xPosition);
+        stream.WriteInt(yPosition);
+        stream.WriteInt(zPosition);
+        stream.WriteInt(direction);
     }
 
     public override void apply(NetHandler handler)

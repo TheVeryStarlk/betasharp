@@ -26,17 +26,17 @@ public class PlayerInteractBlockC2SPacket : Packet
         this.stack = stack;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        x = stream.readInt();
-        y = stream.read();
-        z = stream.readInt();
-        side = stream.read();
-        short itemId = stream.readShort();
+        x = stream.ReadInt();
+        y = stream.ReadInt();
+        z = stream.ReadInt();
+        side = stream.ReadInt();
+        short itemId = stream.ReadShort();
         if (itemId >= 0)
         {
-            sbyte count = (sbyte)stream.readByte();
-            short damage = stream.readShort();
+            sbyte count = (sbyte)stream.ReadByte();
+            short damage = stream.ReadShort();
             stack = new ItemStack(itemId, count, damage);
         }
         else
@@ -46,21 +46,21 @@ public class PlayerInteractBlockC2SPacket : Packet
 
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeInt(x);
-        stream.write(y);
-        stream.writeInt(z);
-        stream.write(side);
+        stream.WriteInt(x);
+        stream.WriteInt(y);
+        stream.WriteInt(z);
+        stream.WriteInt(side);
         if (stack == null)
         {
-            stream.writeShort(-1);
+            stream.WriteShort(-1);
         }
         else
         {
-            stream.writeShort(stack.itemId);
-            stream.writeByte(stack.count);
-            stream.writeShort(stack.getDamage());
+            stream.WriteShort((short)stack.itemId);
+            stream.WriteByte((byte)stack.count);
+            stream.WriteShort((short)stack.getDamage());
         }
 
     }

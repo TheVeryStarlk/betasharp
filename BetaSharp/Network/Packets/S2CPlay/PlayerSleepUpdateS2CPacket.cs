@@ -26,22 +26,22 @@ public class PlayerSleepUpdateS2CPacket : Packet
         this.id = player.id;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        id = stream.readInt();
-        status = (sbyte)stream.readByte();
-        x = stream.readInt();
-        y = (sbyte)stream.readByte();
-        z = stream.readInt();
+        id = stream.ReadInt();
+        status = (sbyte)stream.ReadByte();
+        x = stream.ReadInt();
+        y = (sbyte)stream.ReadByte();
+        z = stream.ReadInt();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeInt(id);
-        stream.writeByte(status);
-        stream.writeInt(x);
-        stream.writeByte(y);
-        stream.writeInt(z);
+        stream.WriteInt(id);
+        stream.WriteByte((sbyte)status);
+        stream.WriteInt(x);
+        stream.WriteByte((sbyte)y);
+        stream.WriteInt(z);
     }
 
     public override void apply(NetHandler handler)

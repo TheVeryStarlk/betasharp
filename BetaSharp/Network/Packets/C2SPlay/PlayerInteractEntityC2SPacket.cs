@@ -21,18 +21,18 @@ public class PlayerInteractEntityC2SPacket : Packet
         this.isLeftClick = isLeftClick;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        playerId = stream.readInt();
-        entityId = stream.readInt();
-        isLeftClick = (sbyte)stream.readByte();
+        playerId = stream.ReadInt();
+        entityId = stream.ReadInt();
+        isLeftClick = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeInt(playerId);
-        stream.writeInt(entityId);
-        stream.writeByte(isLeftClick);
+        stream.WriteInt(playerId);
+        stream.WriteInt(entityId);
+        stream.WriteByte((byte)isLeftClick);
     }
 
     public override void apply(NetHandler handler)

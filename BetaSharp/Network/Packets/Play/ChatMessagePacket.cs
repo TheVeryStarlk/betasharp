@@ -1,3 +1,4 @@
+using BetaSharp.NBT;
 using java.io;
 
 namespace BetaSharp.Network.Packets.Play;
@@ -22,14 +23,14 @@ public class ChatMessagePacket : Packet
         chatMessage = msg;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        chatMessage = readString(stream, 119);
+        chatMessage = stream.ReadString( 119);
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        writeString(chatMessage, stream);
+        stream.WriteString(chatMessage);
     }
 
     public override void apply(NetHandler handler)

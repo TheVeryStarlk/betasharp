@@ -35,27 +35,27 @@ public class LivingEntitySpawnS2CPacket : Packet
         metaData = ent.getDataWatcher();
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        entityId = stream.readInt();
-        type = (sbyte)stream.readByte();
-        xPosition = stream.readInt();
-        yPosition = stream.readInt();
-        zPosition = stream.readInt();
-        yaw = (sbyte)stream.readByte();
-        pitch = (sbyte)stream.readByte();
+        entityId = stream.ReadInt();
+        type = (sbyte)stream.ReadByte();
+        xPosition = stream.ReadInt();
+        yPosition = stream.ReadInt();
+        zPosition = stream.ReadInt();
+        yaw = (sbyte)stream.ReadByte();
+        pitch = (sbyte)stream.ReadByte();
         receivedMetadata = DataWatcher.readWatchableObjects(stream);
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeInt(entityId);
-        stream.writeByte(type);
-        stream.writeInt(xPosition);
-        stream.writeInt(yPosition);
-        stream.writeInt(zPosition);
-        stream.writeByte(yaw);
-        stream.writeByte(pitch);
+        stream.WriteInt(entityId);
+        stream.WriteByte(type);
+        stream.WriteInt(xPosition);
+        stream.WriteInt(yPosition);
+        stream.WriteInt(zPosition);
+        stream.WriteByte(yaw);
+        stream.WriteByte(pitch);
         metaData.writeWatchableObjects(stream);
     }
 

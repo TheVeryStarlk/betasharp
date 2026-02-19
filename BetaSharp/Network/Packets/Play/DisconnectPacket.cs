@@ -1,3 +1,4 @@
+using BetaSharp.NBT;
 using java.io;
 
 namespace BetaSharp.Network.Packets.Play;
@@ -17,14 +18,14 @@ public class DisconnectPacket : Packet
         this.reason = reason;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        reason = readString(stream, 100);
+        reason = stream.ReadString( 100);
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        writeString(reason, stream);
+        stream.WriteString(reason);
     }
 
     public override void apply(NetHandler handler)

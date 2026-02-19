@@ -28,22 +28,22 @@ public class BlockUpdateS2CPacket : Packet
         blockMetadata = world.getBlockMeta(x, y, z);
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        x = stream.readInt();
-        y = stream.read();
-        z = stream.readInt();
-        blockRawId = stream.read();
-        blockMetadata = stream.read();
+        x = stream.ReadInt();
+        y = stream.ReadInt();
+        z = stream.ReadInt();
+        blockRawId = stream.ReadInt();
+        blockMetadata = stream.ReadInt();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeInt(x);
-        stream.write(y);
-        stream.writeInt(z);
-        stream.write(blockRawId);
-        stream.write(blockMetadata);
+        stream.WriteInt(x);
+        stream.WriteInt(y);
+        stream.WriteInt(z);
+        stream.WriteInt(blockRawId);
+        stream.WriteInt(blockMetadata);
     }
 
     public override void apply(NetHandler handler)

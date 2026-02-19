@@ -26,18 +26,18 @@ public class ScreenHandlerPropertyUpdateS2CPacket : Packet
         handler.onScreenHandlerPropertyUpdate(this);
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        syncId = (sbyte)stream.readByte();
-        propertyId = stream.readShort();
-        value = stream.readShort();
+        syncId = (sbyte)stream.ReadByte();
+        propertyId = stream.ReadShort();
+        value = stream.ReadShort();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeByte(syncId);
-        stream.writeShort(propertyId);
-        stream.writeShort(value);
+        stream.WriteByte((sbyte)syncId);
+        stream.WriteShort((short)propertyId);
+        stream.WriteShort((short)value);
     }
 
     public override int size()

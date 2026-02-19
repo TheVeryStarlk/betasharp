@@ -26,18 +26,18 @@ public class ScreenHandlerAcknowledgementPacket : Packet
         handler.onScreenHandlerAcknowledgement(this);
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        syncId = (sbyte)stream.readByte();
-        actionType = stream.readShort();
-        accepted = (sbyte)stream.readByte() != 0;
+        syncId = (sbyte)stream.ReadByte();
+        actionType = stream.ReadShort();
+        accepted = (sbyte)stream.ReadByte() != 0;
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeByte(syncId);
-        stream.writeShort(actionType);
-        stream.writeByte(accepted ? 1 : 0);
+        stream.WriteByte((sbyte)syncId);
+        stream.WriteShort(actionType);
+        stream.WriteBoolean(accepted);
     }
 
     public override int size()

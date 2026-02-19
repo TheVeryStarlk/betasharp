@@ -1,4 +1,6 @@
+using System.Net;
 using BetaSharp.Network.Packets;
+using javax.xml.ws;
 
 namespace BetaSharp.Network;
 
@@ -115,8 +117,8 @@ public class InternalConnection : Connection
         }
     }
 
-    public override java.net.SocketAddress? getAddress()
+    public override IPEndPoint? getAddress()
     {
-        return new java.net.InetSocketAddress("127.0.0.1", 12345);
+        return new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12345);
     }
 }

@@ -19,17 +19,17 @@ public class PlayerMoveLookAndOnGroundPacket : PlayerMovePacket
         changeLook = true;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        yaw = stream.readFloat();
-        pitch = stream.readFloat();
+        yaw = stream.ReadFloat();
+        pitch = stream.ReadFloat();
         base.read(stream);
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeFloat(yaw);
-        stream.writeFloat(pitch);
+        stream.WriteFloat(yaw);
+        stream.WriteFloat(pitch);
         base.write(stream);
     }
 

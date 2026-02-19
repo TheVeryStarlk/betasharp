@@ -25,25 +25,25 @@ public class PlayerMoveFullPacket : PlayerMovePacket
         changePosition = true;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        x = stream.readDouble();
-        y = stream.readDouble();
-        eyeHeight = stream.readDouble();
-        z = stream.readDouble();
-        yaw = stream.readFloat();
-        pitch = stream.readFloat();
+        x = stream.ReadDouble();
+        y = stream.ReadDouble();
+        eyeHeight = stream.ReadDouble();
+        z = stream.ReadDouble();
+        yaw = stream.ReadFloat();
+        pitch = stream.ReadFloat();
         base.read(stream);
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeDouble(x);
-        stream.writeDouble(y);
-        stream.writeDouble(eyeHeight);
-        stream.writeDouble(z);
-        stream.writeFloat(yaw);
-        stream.writeFloat(pitch);
+        stream.WriteDouble(x);
+        stream.WriteDouble(y);
+        stream.WriteDouble(eyeHeight);
+        stream.WriteDouble(z);
+        stream.WriteFloat(yaw);
+        stream.WriteFloat(pitch);
         base.write(stream);
     }
 

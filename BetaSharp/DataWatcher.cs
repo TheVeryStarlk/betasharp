@@ -10,13 +10,13 @@ namespace BetaSharp;
 public class DataWatcher
 {
     private static readonly Dictionary<Type, int> dataTypes = [];
-        
+
     private readonly Dictionary<int, WatchableObject> watchedObjects = new();
     public bool dirty { get; private set; }
-    
+
     public void addObject(int id, java.lang.Object value)
     {
-        if (!dataTypes.TryGetValue(value.GetType(), out int typeId)) 
+        if (!dataTypes.TryGetValue(value.GetType(), out int typeId))
         {
             throw new ArgumentException("Unknown data type: " + value.GetType());
         }
@@ -44,7 +44,7 @@ public class DataWatcher
                 if (obj.dirty)
                 {
                     if (res == null) res = new ArrayList();
-                        
+
                     obj.dirty = false;
                     res.add(obj);
                 }
@@ -64,7 +64,7 @@ public class DataWatcher
     {
         return ((Integer)watchedObjects[id].watchedObject).intValue();
     }
-        
+
     public string getWatchableObjectString(int id)
     {
         return ((JString)watchedObjects[id].watchedObject).value;
@@ -81,7 +81,7 @@ public class DataWatcher
         }
     }
 
-    public static void writeObjectsInListToStream(List list, DataOutputStream stream)
+    public static void writeObjectsInListToStream(List list, Stream stream)
     {
         if (list != null)
         {
@@ -93,60 +93,60 @@ public class DataWatcher
             }
         }
 
-        stream.writeByte(127);
+        stream.WriteByte(127);
     }
 
-    public void writeWatchableObjects(DataOutputStream stream)
+    public void writeWatchableObjects(Stream stream)
     {
         foreach (var obj in watchedObjects.Values)
         {
             writeWatchableObject(stream, obj);
         }
 
-        stream.writeByte(127);
+        stream.WriteByte(127);
     }
 
-    private static void writeWatchableObject(DataOutputStream stream, WatchableObject obj)
+    private static void writeWatchableObject(Stream stream, WatchableObject obj)
     {
         int header = (obj.objectType << 5 | obj.dataValueId & 31) & 255;
-        stream.writeByte(header);
+        stream.WriteByte((byte)header);
         switch (obj.objectType)
         {
             case 0:
-                stream.writeByte(((java.lang.Byte)obj.watchedObject).byteValue());
+                stream.WriteByte(((java.lang.Byte)obj.watchedObject).byteValue());
                 break;
             case 1:
-                stream.writeShort(((Short)obj.watchedObject).shortValue());
+                stream.WriteShort(((Short)obj.watchedObject).shortValue());
                 break;
             case 2:
-                stream.writeInt(((Integer)obj.watchedObject).intValue());
+                stream.WriteInt(((Integer)obj.watchedObject).intValue());
                 break;
             case 3:
-                stream.writeFloat(((Float)obj.watchedObject).floatValue());
+                stream.WriteFloat(((Float)obj.watchedObject).floatValue());
                 break;
             case 4:
-                Packet.writeString(((JString)obj.watchedObject).value, stream);
+                stream.WriteString(((JString)obj.watchedObject).value);
                 break;
             case 5:
                 ItemStack item = (ItemStack)obj.watchedObject;
-                stream.writeShort(item.getItem().id);
-                stream.writeByte(item.count);
-                stream.writeShort(item.getDamage());
+                stream.WriteShort((short)item.getItem().id);
+                stream.WriteByte((byte)item.count);
+                stream.WriteShort((short)item.getDamage());
                 break;
             case 6:
                 Vec3i vec = (Vec3i)obj.watchedObject;
-                stream.writeInt(vec.x);
-                stream.writeInt(vec.y);
-                stream.writeInt(vec.z);
+                stream.WriteInt(vec.x);
+                stream.WriteInt(vec.y);
+                stream.WriteInt(vec.z);
                 break;
         }
     }
 
-    public static List readWatchableObjects(DataInputStream stream)
+    public static List readWatchableObjects(Stream stream)
     {
         ArrayList res = null;
 
-        for (sbyte b = (sbyte)stream.readByte(); b != 127; b = (sbyte)stream.readByte())
+        for (sbyte b = (sbyte)stream.ReadByte(); b != 127; b = (sbyte)stream.ReadByte())
         {
             res ??= [];
 
@@ -156,30 +156,30 @@ public class DataWatcher
             switch (objectType)
             {
                 case 0:
-                    obj = new WatchableObject(objectType, dataValueId, java.lang.Byte.valueOf(stream.readByte()));
+                    obj = new WatchableObject(objectType, dataValueId, java.lang.Byte.valueOf((byte)stream.ReadByte()));
                     break;
                 case 1:
-                    obj = new WatchableObject(objectType, dataValueId, Short.valueOf(stream.readShort()));
+                    obj = new WatchableObject(objectType, dataValueId, Short.valueOf(stream.ReadShort()));
                     break;
                 case 2:
-                    obj = new WatchableObject(objectType, dataValueId, Integer.valueOf(stream.readInt()));
+                    obj = new WatchableObject(objectType, dataValueId, Integer.valueOf(stream.ReadInt()));
                     break;
                 case 3:
-                    obj = new WatchableObject(objectType, dataValueId, Float.valueOf(stream.readFloat()));
+                    obj = new WatchableObject(objectType, dataValueId, Float.valueOf(stream.ReadFloat()));
                     break;
                 case 4:
-                    obj = new WatchableObject(objectType, dataValueId, new JString(Packet.readString(stream, 64)));
+                    obj = new WatchableObject(objectType, dataValueId, new JString(stream.ReadString(64)));
                     break;
                 case 5:
-                    short id = stream.readShort();
-                    sbyte count = (sbyte)stream.readByte();
-                    short damage = stream.readShort();
+                    short id = stream.ReadShort();
+                    sbyte count = (sbyte)stream.ReadByte();
+                    short damage = stream.ReadShort();
                     obj = new WatchableObject(objectType, dataValueId, new ItemStack(id, count, damage));
                     break;
                 case 6:
-                    int x = stream.readInt();
-                    int y = stream.readInt();
-                    int z = stream.readInt();
+                    int x = stream.ReadInt();
+                    int y = stream.ReadInt();
+                    int z = stream.ReadInt();
                     obj = new WatchableObject(objectType, dataValueId, new Vec3i(x, y, z));
                     break;
             }

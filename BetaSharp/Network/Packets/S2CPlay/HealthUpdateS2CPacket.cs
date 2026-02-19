@@ -17,14 +17,14 @@ public class HealthUpdateS2CPacket : Packet
         healthMP = health;
     }
 
-    public override void read(DataInputStream stream)
+    public override void read(Stream stream)
     {
-        healthMP = stream.readShort();
+        healthMP = stream.ReadShort();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void write(Stream stream)
     {
-        stream.writeShort(healthMP);
+        stream.WriteShort((short)healthMP);
     }
 
     public override void apply(NetHandler handler)
