@@ -2,13 +2,11 @@
 using BetaSharp.Network;
 using BetaSharp.Server.Internal;
 using BetaSharp.Server.Threading;
-using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Client.Guis;
 
 public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
 {
-    private readonly ILogger<GuiLevelLoading> _logger = Log.Instance.For<GuiLevelLoading>();
     private readonly string _worldDir = worldDir;
     private readonly long _seed = seed;
     private bool _serverStarted;
@@ -45,7 +43,7 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
                 serverConnection.AssignRemote(clientConnection);
 
                 mc.internalServer.connections.AddInternalConnection(serverConnection);
-                _logger.LogInformation("[Internal-Client] Created internal connection");
+                Log.Info("[Internal-Client] Created internal connection");
 
                 ClientNetworkHandler clientHandler = new(mc, clientConnection);
                 clientConnection.setNetworkHandler(clientHandler);

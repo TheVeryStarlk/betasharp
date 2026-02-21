@@ -1,6 +1,5 @@
 using System.IO.Compression;
 using BetaSharp.Client.Rendering.Core;
-using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL.Legacy;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -9,7 +8,6 @@ namespace BetaSharp.Client.Resource.Pack;
 
 public class ZippedTexturePack : TexturePack
 {
-    private readonly ILogger _logger = Log.Instance.For<ZippedTexturePack>();
     private ZipArchive? _texturePackZipFile;
     private int _texturePackName = -1;
     private Image<Rgba32>? _texturePackThumbnail;
@@ -55,7 +53,7 @@ public class ZippedTexturePack : TexturePack
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to load zipped texture pack {File}", _texturePackFile.Name);
+            Log.Error(ex);
         }
     }
 
@@ -95,10 +93,7 @@ public class ZippedTexturePack : TexturePack
             // Opens the zip file and keeps it open for reading resources
             _texturePackZipFile = ZipFile.OpenRead(_texturePackFile.FullName);
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to open texture pack zip file {File}", _texturePackFile.Name);
-        }
+        catch (Exception) { }
     }
 
     public override void CloseTexturePackFile()
@@ -125,10 +120,7 @@ public class ZippedTexturePack : TexturePack
                 return ms;
             }
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to get resource as stream for path {Path}", path);
-        }
+        catch (Exception) { }
 
         return base.GetResourceAsStream(path);
     }

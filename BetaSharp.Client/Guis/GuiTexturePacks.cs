@@ -1,13 +1,10 @@
 using System.Diagnostics;
 using BetaSharp.Client.Rendering;
-using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Client.Guis;
 
 public class GuiTexturePacks : GuiScreen
 {
-    private readonly ILogger<GuiTexturePacks> _logger = Log.Instance.For<GuiTexturePacks>();
-
     private const int ButtonOpenFolder = 5;
     private const int ButtonDone = 6;
 
@@ -49,7 +46,7 @@ public class GuiTexturePacks : GuiScreen
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError($"Failed to open URL: {ex.Message}");
+                        Log.Error($"Failed to open URL: {ex.Message}");
                     }
                     break;
                 case ButtonDone:

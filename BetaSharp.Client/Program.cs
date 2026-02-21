@@ -1,6 +1,6 @@
 using BetaSharp;
 using BetaSharp.Client;
-using BetaSharp.Util;
 
-Log.Instance.Initialize(PathHelper.GetAppDir("BetaSharp"));
+Log.Initialize(new LogOptions(IsServer: false));
+Log.AddCrashHandlers();
 Minecraft.Startup(args);

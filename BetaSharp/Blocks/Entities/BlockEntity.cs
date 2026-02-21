@@ -3,7 +3,6 @@ using BetaSharp.Network.Packets;
 using BetaSharp.Worlds;
 using java.lang;
 using java.util;
-using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Blocks.Entities;
 
@@ -12,7 +11,6 @@ public class BlockEntity : java.lang.Object
     public static readonly Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(BlockEntity).TypeHandle);
     private static readonly Map idToClass = new HashMap();
     private static readonly Map classToId = new HashMap();
-    private static readonly ILogger<BlockEntity> s_logger = Log.Instance.For<BlockEntity>();
     public World world;
     public int x;
     public int y;
@@ -82,7 +80,7 @@ public class BlockEntity : java.lang.Object
         }
         else
         {
-            s_logger.LogInformation("Skipping TileEntity with id " + nbt.GetString("id"));
+            Log.Info("Skipping TileEntity with id " + nbt.GetString("id"));
         }
 
         return blockEntity;

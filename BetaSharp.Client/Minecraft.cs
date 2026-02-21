@@ -32,8 +32,6 @@ using BetaSharp.Worlds;
 using BetaSharp.Worlds.Colors;
 using BetaSharp.Worlds.Storage;
 using ImGuiNET;
-using java.lang;
-using Microsoft.Extensions.Logging;
 using Silk.NET.Input;
 using Silk.NET.OpenGL.Legacy;
 using Silk.NET.OpenGL.Legacy.Extensions.ImGui;
@@ -43,7 +41,6 @@ namespace BetaSharp.Client;
 public partial class Minecraft
 {
     public static Minecraft INSTANCE;
-    private readonly ILogger<Minecraft> _logger = Log.Instance.For<Minecraft>();
     public PlayerController playerController;
     private bool fullscreen;
     private bool hasCrashed;
@@ -191,7 +188,7 @@ public partial class Minecraft
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Exception");
+            Log.Error(ex);
         }
         texturePackList = new TexturePacks(this, new DirectoryInfo(mcDataDir.getAbsolutePath()));
         textureManager = new TextureManager(texturePackList, options);
@@ -212,13 +209,13 @@ public partial class Minecraft
         loadScreen();
 
         bool anisotropicFiltering = GLManager.GL.IsExtensionPresent("GL_EXT_texture_filter_anisotropic");
-        _logger.LogInformation($"Anisotropic Filtering Supported: {anisotropicFiltering}");
+        Log.Info($"Anisotropic Filtering Supported: {anisotropicFiltering}");
 
         if (anisotropicFiltering)
         {
             GLManager.GL.GetFloat(GLEnum.MaxTextureMaxAnisotropy, out float maxAnisotropy);
             GameOptions.MaxAnisotropy = maxAnisotropy;
-            _logger.LogInformation($"Max Anisotropy: {maxAnisotropy}");
+            Log.Info($"Max Anisotropy: {maxAnisotropy}");
         }
         else
         {
@@ -234,7 +231,7 @@ public partial class Minecraft
         }
         catch (Exception e)
         {
-            _logger.LogError($"Failed to initialize ImGui: {e}");
+            Log.Error(e, "Failed to initialize ImGui");
             imGuiController = null;
         }
 
@@ -398,10 +395,10 @@ public partial class Minecraft
         GLEnum glError = GLManager.GL.GetError();
         if (glError != 0)
         {
-            _logger.LogError($"#### GL ERROR ####");
-            _logger.LogError($"@ {location}");
-            _logger.LogError($"> {glError.ToString()}");
-            _logger.LogError($"");
+            Log.Error($"#### GL ERROR ####");
+            Log.Error($"@ {location}");
+            Log.Error($"> {glError.ToString()}");
+            Log.Error($"");
         }
     }
 
@@ -413,7 +410,7 @@ public partial class Minecraft
             statFileWriter.func_27175_b();
             statFileWriter.syncStats();
 
-            _logger.LogInformation("Stopping!");
+            Log.Info("Stopping!");
 
             try
             {
@@ -642,12 +639,7 @@ public partial class Minecraft
         catch (Exception unexpectedException)
         {
             crashCleanup();
-            unexpectedException.printStackTrace();
-            onMinecraftCrash(new UnexpectedThrowable("Unexpected error", unexpectedException));
-        }
-        catch (System.Exception e)
-        {
-            _logger.LogError(e.ToString());
+            onMinecraftCrash(unexpectedException);
         }
         finally
         {
@@ -1000,7 +992,7 @@ public partial class Minecraft
         }
         catch (Exception displayException)
         {
-            _logger.LogError(displayException.ToString());
+            Log.Error(displayException, "Failed to toggle fullscreen");
         }
     }
 
@@ -1382,7 +1374,7 @@ public partial class Minecraft
 
     private void forceReload()
     {
-        _logger.LogInformation("FORCING RELOAD!");
+        Log.Info("FORCING RELOAD!");
         sndManager = new SoundManager();
         sndManager.LoadSoundSettings(options);
     }

@@ -5,7 +5,6 @@ using BetaSharp.Worlds.Chunks.Storage;
 using BetaSharp.Worlds.Dimensions;
 using java.io;
 using java.util.logging;
-using Microsoft.Extensions.Logging;
 using File = System.IO.File;
 
 namespace BetaSharp.Worlds.Storage;
@@ -16,7 +15,6 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
     private readonly java.io.File playersDirectory;
     private readonly java.io.File dataDir;
     private readonly long now = java.lang.System.currentTimeMillis();
-    private readonly ILogger<RegionWorldStorage> _logger = Log.Instance.For<RegionWorldStorage>();
 
     public RegionWorldStorage(java.io.File var1, string var2, bool var3)
     {
@@ -52,7 +50,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
         }
         catch (java.io.IOException ex)
         {
-            _logger.LogError($"Failed to check session lock, aborting: {ex}");
+            Log.Error($"Failed to check session lock, aborting: {ex}");
             throw new java.lang.RuntimeException("Failed to check session lock, aborting");
         }
     }
@@ -140,7 +138,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
         }
         catch (System.Exception e)
         {
-            _logger.LogError(e, "Exception");
+            Log.Error(e);
         }
     }
 
@@ -178,7 +176,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
             }
             catch (java.lang.Exception ex)
             {
-                _logger.LogError(ex, "Exception");
+                Log.Error(ex);
             }
         }
 
@@ -219,7 +217,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
         }
         catch (java.lang.Exception ex)
         {
-            _logger.LogError(ex, "Exception");
+            Log.Error(ex);
         }
 
     }
@@ -250,7 +248,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
         }
         catch (Exception var5)
         {
-            _logger.LogWarning($"Failed to save player data for {player.name}");
+            Log.Warn($"Failed to save player data for {player.name}");
         }
     }
 
@@ -289,19 +287,19 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
                         using FileStream writeStream = File.OpenWrite(file.getAbsolutePath());
                         NbtIo.WriteCompressed(playerTag, writeStream);
 
-                        _logger.LogInformation($"Migrated singleplayer player data from level.dat to {file.getName()}");
+                        Log.Info($"Migrated singleplayer player data from level.dat to {file.getName()}");
                         return playerTag;
                     }
                 }
                 catch (Exception e)
                 {
-                    _logger.LogWarning($"Failed to migrate player data from level.dat: {e}");
+                    Log.Warn($"Failed to migrate player data from level.dat: {e}");
                 }
             }
         }
         catch (Exception var3)
         {
-            _logger.LogWarning($"Failed to load player data for {playerName}");
+            Log.Warn($"Failed to load player data for {playerName}");
         }
 
         return null;

@@ -10,8 +10,6 @@ using BetaSharp.Worlds;
 using BetaSharp.Worlds.Storage;
 using java.lang;
 using java.util;
-using java.util.logging;
-using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server;
 
@@ -37,7 +35,6 @@ public abstract class MinecraftServer : Runnable, CommandOutput
     public bool flightEnabled;
     protected bool logHelp = true;
 
-    private readonly ILogger<MinecraftServer> _logger = Log.Instance.For<MinecraftServer>();
     private readonly Lock _tpsLock = new();
     private long _lastTpsTime;
     private int _ticksThisSecond;
@@ -100,12 +97,12 @@ public abstract class MinecraftServer : Runnable, CommandOutput
             }
         }
 
-        _logger.LogInformation($"Preparing level \"{worldName}\"");
+        Log.Info($"Preparing level \"{worldName}\"");
         loadWorld(new RegionWorldStorageSource(getFile(".")), worldName, seed);
 
         if (logHelp)
         {
-            _logger.LogInformation($"Done ({java.lang.System.nanoTime() - startTime}ns)! For help, type \"help\" or \"?\"");
+            Log.Info($"Done ({java.lang.System.nanoTime() - startTime}ns)! For help, type \"help\" or \"?\"");
         }
 
         return true;
@@ -138,7 +135,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
 
         for (int i = 0; i < worlds.Length; i++)
         {
-            _logger.LogInformation($"Preparing start region for level {i}");
+            Log.Info($"Preparing start region for level {i}");
             if (i == 0 || config.GetAllowNether(true))
             {
                 ServerWorld world = worlds[i];
@@ -179,7 +176,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
     {
         progressMessage = progressType;
         this.progress = progress;
-        _logger.LogInformation($"{progressType}: {progress}%");
+        Log.Info($"{progressType}: {progress}%");
     }
 
     private void clearProgress()
@@ -190,7 +187,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
 
     private void saveWorlds()
     {
-        _logger.LogInformation("Saving chunks");
+        Log.Info("Saving chunks");
 
         foreach (ServerWorld world in worlds)
         {
@@ -206,7 +203,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
             return;
         }
 
-        _logger.LogInformation("Stopping server");
+        Log.Info("Stopping server");
 
         if (playerManager != null)
         {
@@ -244,13 +241,13 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                     long tickLength = currentTime - lastTime;
                     if (tickLength > 2000L)
                     {
-                        _logger.LogWarning("Can't keep up! Did the system time change, or is the server overloaded?");
+                        Log.Warn("Can't keep up! Did the system time change, or is the server overloaded?");
                         tickLength = 2000L;
                     }
 
                     if (tickLength < 0L)
                     {
-                        _logger.LogWarning("Time ran backwards! Did the system time change?");
+                        Log.Warn("Time ran backwards! Did the system time change?");
                         tickLength = 0L;
                     }
 
@@ -317,8 +314,8 @@ public abstract class MinecraftServer : Runnable, CommandOutput
         }
         catch (System.Exception ex)
         {
-            _logger.LogError(ex, "Exception");
-            _logger.LogError("Unexpected exception");
+            Log.Error(ex);
+            Log.Error("Unexpected exception");
 
             while (running)
             {
@@ -424,7 +421,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
         }
         catch (java.lang.Exception ex)
         {
-            _logger.LogWarning($"Unexpected exception while parsing console command: {ex}");
+            Log.Warn($"Unexpected exception while parsing console command: {ex}");
         }
     }
 
@@ -450,12 +447,12 @@ public abstract class MinecraftServer : Runnable, CommandOutput
 
     public void SendMessage(string message)
     {
-        _logger.LogInformation(message);
+        Log.Info(message);
     }
 
     public void Warn(string message)
     {
-        _logger.LogWarning(message);
+        Log.Warn(message);
     }
 
     public string GetName()

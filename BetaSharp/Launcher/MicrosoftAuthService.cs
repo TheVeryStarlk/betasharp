@@ -5,14 +5,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Web;
-using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Launcher;
 
 public class MicrosoftAuthService
 {
-    private readonly ILogger<MicrosoftAuthService> _logger = Log.Instance.For<MicrosoftAuthService>();
-
     private static readonly HttpClient _httpClient = new();
 
     //Prism Launcher client id
@@ -53,7 +50,7 @@ public class MicrosoftAuthService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Exception");
+            Log.Error(ex);
             return null;
         }
     }

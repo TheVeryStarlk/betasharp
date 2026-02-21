@@ -16,7 +16,6 @@ using BetaSharp.Worlds.Dimensions;
 using BetaSharp.Worlds.Storage;
 using java.lang;
 using java.util;
-using Microsoft.Extensions.Logging;
 using Silk.NET.Maths;
 
 namespace BetaSharp.Worlds;
@@ -27,7 +26,6 @@ public abstract class World : java.lang.Object, BlockView
     private const int AUTOSAVE_PERIOD = 40;
     public bool instantBlockUpdateEnabled;
     private readonly List<LightUpdate> lightingQueue;
-    private readonly ILogger<World> _logger = Log.Instance.For<World>();
     public List<Entity> entities;
     private readonly List<Entity> entitiesToUnload;
     private readonly TreeSet scheduledUpdates;
@@ -2276,7 +2274,7 @@ public abstract class World : java.lang.Object, BlockView
                     var12 = 1000000;
                     if (lightingQueue.Count > 1000000)
                     {
-                        _logger.LogInformation($"More than {var12} updates, aborting lighting updates");
+                        Log.Info($"More than {var12} updates, aborting lighting updates");
                         lightingQueue.Clear();
                     }
 

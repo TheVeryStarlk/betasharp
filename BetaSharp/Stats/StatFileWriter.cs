@@ -2,15 +2,12 @@ using System.Text.Json;
 using BetaSharp.Util;
 using java.lang;
 using java.util;
-using Microsoft.Extensions.Logging;
 using File = java.io.File;
 
 namespace BetaSharp.Stats;
 
 public class StatFileWriter
 {
-    private static readonly ILogger<StatFileWriter> s_logger = Log.Instance.For<StatFileWriter>();
-
     private Map field_25102_a = new HashMap();
     private Map field_25101_b = new HashMap();
     private bool statsExist;
@@ -33,7 +30,7 @@ public class StatFileWriter
                 java.io.File statsFile = new(statsFolder, file.getName());
                 if (!statsFile.exists())
                 {
-                    s_logger.LogInformation($"Relocating {file.getName()}");
+                    Log.Info($"Relocating {file.getName()}");
                     file.renameTo(statsFile);
                 }
             }
@@ -136,7 +133,7 @@ public class StatFileWriter
                     StatBase var12 = Stats.getStatById(var10);
                     if (var12 == null)
                     {
-                        s_logger.LogInformation($"{var10} is not a valid stat");
+                        Log.Info($"{var10} is not a valid stat");
                     }
                     else
                     {
@@ -154,19 +151,19 @@ public class StatFileWriter
                 string checksum = checksumElement.GetString();
                 if (!statsChecksum.Equals(checksum))
                 {
-                    s_logger.LogInformation("CHECKSUM MISMATCH");
+                    Log.Info("CHECKSUM MISMATCH");
                     return null;
                 }
             }
             else
             {
-                s_logger.LogInformation("CHECKSUM MISMATCH");
+                Log.Info("CHECKSUM MISMATCH");
                 return null;
             }
         }
         catch (JsonException ex)
         {
-            s_logger.LogError(ex, "Exception");
+            Log.Error(ex);
         }
 
         return statsMap;

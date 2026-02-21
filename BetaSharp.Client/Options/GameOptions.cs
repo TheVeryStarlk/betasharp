@@ -3,16 +3,12 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using BetaSharp.Client.Input;
-using java.io;
-using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Client.Options;
 
 public class GameOptions
 {
-    private readonly ILogger<GameOptions> _logger = Log.Instance.For<GameOptions>();
-
-    private static readonly string[] RENDER_DISTANCES =
+    private static readonly string[] RenderDistance =
     [
         "options.renderDistance.far",
         "options.renderDistance.normal",
@@ -330,13 +326,13 @@ public class GameOptions
                 }
                 catch (Exception)
                 {
-                    _logger.LogError($"Skipping bad option: {line}");
+                    Log.Error($"Skipping bad option: {line}");
                 }
             }
         }
         catch (Exception)
         {
-            _logger.LogError("Failed to load options");
+            Log.Error("Failed to load options");
         }
     }
 
@@ -435,7 +431,7 @@ public class GameOptions
         }
         catch (Exception exception)
         {
-            _logger.LogError($"Failed to save options: {exception.Message}");
+            Log.Error($"Failed to save options: {exception.Message}");
         }
     }
 }

@@ -3,7 +3,6 @@ using BetaSharp.Network.Packets.Play;
 using BetaSharp.Network.Packets.S2CPlay;
 using java.lang;
 using java.util;
-using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Network.Packets;
 
@@ -13,8 +12,6 @@ public abstract class Packet : java.lang.Object
     private static Map TYPE_TO_ID = new HashMap();
     private static Set S2C = new HashSet();
     private static Set C2S = new HashSet();
-    private static readonly ILogger<Packet> s_logger = Log.Instance.For<Packet>();
-
     public readonly long creationTime = java.lang.System.currentTimeMillis();
     public bool worldPacket = false;
     private static HashMap trackers;
@@ -56,8 +53,8 @@ public abstract class Packet : java.lang.Object
         }
         catch (java.lang.Exception ex)
         {
-            s_logger.LogError(ex, "Exception");
-            s_logger.LogInformation($"Skipping packet with id {rawId}");
+            Log.Error(ex);
+            Log.Info($"Skipping packet with id {rawId}");
             return null;
         }
     }
@@ -96,7 +93,7 @@ public abstract class Packet : java.lang.Object
         }
         catch (java.io.EOFException)
         {
-            s_logger.LogInformation("Reached end of stream");
+            Log.Info("Reached end of stream");
             return null;
         }
 

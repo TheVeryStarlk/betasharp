@@ -1,6 +1,5 @@
 using BetaSharp.Blocks;
 using BetaSharp.Items;
-using Microsoft.Extensions.Logging;
 
 namespace BetaSharp;
 
@@ -35,6 +34,6 @@ public class Achievements
 
     static Achievements()
     {
-        Log.Instance.For<Achievements>().LogInformation($"{AllAchievements.Count} achievements");
+        Log.Info($"{AllAchievements.Count} achievements");
     }
 }

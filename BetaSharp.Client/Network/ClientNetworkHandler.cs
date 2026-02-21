@@ -18,14 +18,11 @@ using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
 using BetaSharp.Worlds.Storage;
 using java.net;
-using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Client.Network;
 
 public class ClientNetworkHandler : NetHandler
 {
-    private readonly ILogger<ClientNetworkHandler> _logger = Log.Instance.For<ClientNetworkHandler>();
-
     private bool disconnected;
     private readonly Connection netManager;
     public string field_1209_a;
@@ -779,7 +776,7 @@ public class ClientNetworkHandler : NetHandler
         }
         else
         {
-            _logger.LogInformation($"Unknown itemid: {packet.id}");
+            Log.Info($"Unknown itemid: {packet.id}");
         }
 
     }

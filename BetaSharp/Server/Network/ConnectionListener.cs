@@ -3,7 +3,6 @@ using BetaSharp.Server.Threading;
 using java.lang;
 using java.net;
 using java.util.logging;
-using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server.Network;
 
@@ -11,8 +10,6 @@ public class ConnectionListener
 {
     public ServerSocket socket;
     private readonly java.lang.Thread _thread;
-    private readonly ILogger<ConnectionListener> _logger = Log.Instance.For<ConnectionListener>();
-
     public volatile bool open;
     public int connectionCounter = 0;
     private readonly List<ServerLoginNetworkHandler> _pendingConnections = [];
@@ -76,7 +73,7 @@ public class ConnectionListener
             catch (java.lang.Exception ex)
             {
                 connection.disconnect("Internal server error");
-                _logger.LogError($"Failed to handle packet: {ex}");
+                Log.Error($"Failed to handle packet: {ex}");
             }
 
             if (connection.closed)
@@ -97,7 +94,7 @@ public class ConnectionListener
             }
             catch (java.lang.Exception ex)
             {
-                _logger.LogError($"Failed to handle packet: {ex}");
+                Log.Error($"Failed to handle packet: {ex}");
                 connection.disconnect("Internal server error");
             }
 

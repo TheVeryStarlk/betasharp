@@ -2,7 +2,6 @@ using BetaSharp.Blocks;
 using BetaSharp.Inventorys;
 using BetaSharp.Items;
 using java.util;
-using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Recipes;
 
@@ -10,8 +9,6 @@ public class CraftingManager
 {
     private static CraftingManager instance { get; } = new();
     public List<IRecipe> Recipes { get; } = [];
-
-    private readonly ILogger<CraftingManager> _logger = Log.Instance.For<CraftingManager>();
 
     public static CraftingManager getInstance()
     {
@@ -85,7 +82,7 @@ public class CraftingManager
         AddRecipe(new ItemStack(Block.StickyPiston, 1), ["S", "P", 'S', Item.Slimeball, 'P', Block.Piston]);
         AddRecipe(new ItemStack(Item.Bed, 1), ["###", "XXX", '#', Block.Wool, 'X', Block.Planks]);
         Recipes.Sort(new RecipeSorter());
-        _logger.LogInformation($"{Recipes.Count} recipes");
+        Log.Info($"{Recipes.Count} recipes");
     }
 
     public void AddRecipe(ItemStack result, params object[] pattern)
