@@ -21,20 +21,15 @@ internal sealed partial class PlayingViewModel(NavigationService navigationServi
     private Process? _process;
     private TaskCompletionSource? _completion;
 
-    private readonly ProcessStartInfo _info = new()
-    {
-        FileName = Path.Combine(AppContext.BaseDirectory, "Client", "BetaSharp.Client"),
-        RedirectStandardInput = true,
-        RedirectStandardOutput = true,
-        RedirectStandardError = true
-    };
+    private readonly ProcessStartInfo _info = new() { FileName = Path.Combine(AppContext.BaseDirectory, "Client", "BetaSharp.Client"), RedirectStandardInput = true, RedirectStandardOutput = true, RedirectStandardError = true };
 
     [RelayCommand]
     private async Task InitializeAsync()
     {
-        _completion = new TaskCompletionSource();
-
+        Selected = -1;
         Logs.Clear();
+
+        _completion = new TaskCompletionSource();
 
         var getting = accountsService.GetAsync();
         var downloading = clientService.DownloadAsync();
@@ -49,9 +44,9 @@ internal sealed partial class PlayingViewModel(NavigationService navigationServi
         _info.Arguments = $"{account.Name} {account.Token}";
         _process = Process.Start(_info);
 
-        ArgumentNullException.ThrowIfNull(_process);
+        // ArgumentNullException.ThrowIfNull(_process);
 
-        await Task.WhenAny(_completion.Task, _process.WaitForExitAsync(), ReadingAsync());
+        await Task.WhenAll(_completion.Task, ReadingAsync());
 
         navigationService.Navigate<HomeViewModel>();
     }
