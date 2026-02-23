@@ -5,6 +5,7 @@ using BetaSharp.Launcher.Features.Alert;
 using BetaSharp.Launcher.Features.Authentication;
 using BetaSharp.Launcher.Features.Home;
 using BetaSharp.Launcher.Features.Mojang;
+using BetaSharp.Launcher.Features.Playing;
 using BetaSharp.Launcher.Features.Shell;
 using BetaSharp.Launcher.Features.Splash;
 using BetaSharp.Launcher.Features.Xbox;
@@ -50,6 +51,7 @@ internal static partial class Bootstrapper
     [Singleton(typeof(NavigationService))]
     [Singleton(typeof(AlertService))]
     [Singleton(typeof(ShellViewModel))]
+    [Singleton(typeof(PlayingViewModel))]
     [Transient(typeof(ClientService))]
     [Transient(typeof(SkinService))]
     [Transient(typeof(MojangClient))]
@@ -61,5 +63,6 @@ internal static partial class Bootstrapper
     [Transient(typeof(ShellView))]
     [Transient(typeof(SplashView))]
     [Transient(typeof(SplashViewModel))]
+    [Transient(typeof(PlayingView))]
     private static partial void ConfigureServices(IServiceCollection services);
 }

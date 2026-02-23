@@ -1,0 +1,26 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:BetaSharp.Launcher.Features.Playing"
+
+             x:Class="BetaSharp.Launcher.Features.Playing.PlayingView" x:DataType="local:PlayingViewModel">
+
+    <Interaction.Behaviors>
+        <EventTriggerBehavior EventName="AttachedToVisualTree">
+            <InvokeCommandAction Command="{Binding InitializeCommand}" />
+        </EventTriggerBehavior>
+    </Interaction.Behaviors>
+
+    <Grid RowDefinitions="* 25 Auto">
+        <ListBox x:Name="LogsBox" ItemsSource="{CompiledBinding Logs}" Background="Transparent"
+                 CornerRadius="{StaticResource ControlCornerRadius}" SelectedIndex="{CompiledBinding Selected, Mode=OneWay}" Grid.Row="0">
+
+            <ListBox.Styles>
+                <Style Selector="ListBoxItem">
+                    <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}" />
+                </Style>
+            </ListBox.Styles>
+        </ListBox>
+
+        <Button Content="Stop" Command="{CompiledBinding StopCommand}" VerticalAlignment="Bottom" Grid.Row="2" />
+    </Grid>
+</UserControl>
