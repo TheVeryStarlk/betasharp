@@ -12,6 +12,10 @@
 
     <Grid RowDefinitions="* Auto" RowSpacing="25">
         <ListBox x:Name="LogsBox" ItemsSource="{CompiledBinding Logs}" SelectedIndex="{CompiledBinding Selected, Mode=OneWay}" Grid.Row="0" />
-        <Button Content="Stop" Command="{CompiledBinding StopCommand}" VerticalAlignment="Bottom" Grid.Row="1" />
+
+        <Grid ColumnDefinitions="0.25* *" ColumnSpacing="10" VerticalAlignment="Bottom" Grid.Row="1">
+            <Button Content="Stop" Command="{CompiledBinding StopCommand}" VerticalAlignment="Bottom" Grid.Column="1" />
+            <Button Content="Back" Command="{CompiledBinding BackCommand}" Grid.Column="0" />
+        </Grid>
     </Grid>
 </UserControl>

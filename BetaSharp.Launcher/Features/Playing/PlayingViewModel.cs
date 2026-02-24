@@ -73,6 +73,12 @@ internal sealed partial class PlayingViewModel(NavigationService navigationServi
         _process = null;
     }
 
+    [RelayCommand]
+    private void Back()
+    {
+        navigationService.Navigate<HomeViewModel>();
+    }
+
     private async Task ReadingAsync()
     {
         ArgumentNullException.ThrowIfNull(_process);
@@ -82,5 +88,7 @@ internal sealed partial class PlayingViewModel(NavigationService navigationServi
             Logs.Add(line);
             Selected = Logs.Count - 1;
         }
+
+        // Do stuff when it closes.
     }
 }
