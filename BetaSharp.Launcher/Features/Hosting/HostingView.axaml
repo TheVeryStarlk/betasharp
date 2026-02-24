@@ -3,6 +3,23 @@
              xmlns:local="clr-namespace:BetaSharp.Launcher.Features.Hosting"
 
              x:Class="BetaSharp.Launcher.Features.Hosting.HostingView" x:DataType="local:HostingViewModel">
-    Welcome to Avalonia!
-</UserControl>
 
+    <Grid RowDefinitions="* Auto" RowSpacing="25">
+        <Grid RowDefinitions="* Auto" RowSpacing="10" IsEnabled="{CompiledBinding Started}" Grid.Row="0">
+
+            <Grid RowDefinitions="Auto *" RowSpacing="5" Grid.Row="0">
+                <TextBlock Text="Imagine some textual statistics here" Opacity="0.5" Grid.Row="0" />
+                <ListBox x:Name="LogsBox" ItemsSource="{CompiledBinding Logs}" SelectedIndex="{CompiledBinding Selected, Mode=OneWay}" Grid.Row="1" />
+            </Grid>
+
+            <TextBox Watermark="Commands" Grid.Row="1" />
+        </Grid>
+
+        <Grid ColumnDefinitions="0.25* *" ColumnSpacing="10" VerticalAlignment="Bottom" Grid.Row="1">
+            <!-- ReSharper disable once Xaml.StyleClassNotFound -->
+            <Button Content="{CompiledBinding Message}" Command="{CompiledBinding StartCommand}" Classes="accent" Grid.Column="1" />
+
+            <Button Content="Back" Command="{CompiledBinding BackCommand}" Grid.Column="0" />
+        </Grid>
+    </Grid>
+</UserControl>

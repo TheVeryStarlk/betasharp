@@ -25,14 +25,16 @@ internal sealed partial class HomeViewModel(
     [RelayCommand]
     private async Task InitializeAsync()
     {
-        Account = await accountsService.GetAsync();
+        var account = await accountsService.GetAsync();
 
-        ArgumentNullException.ThrowIfNull(Account);
+        ArgumentNullException.ThrowIfNull(account);
 
-        if (!string.IsNullOrWhiteSpace(Account.Skin))
+        if (account.Skin != Account?.Skin && !string.IsNullOrWhiteSpace(account.Skin))
         {
-            Face = await skinService.GetFaceAsync(Account.Skin);
+            Face = await skinService.GetFaceAsync(account.Skin);
         }
+
+        Account = account;
     }
 
     [RelayCommand]

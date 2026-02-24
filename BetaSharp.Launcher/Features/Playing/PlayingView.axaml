@@ -11,16 +11,7 @@
     </Interaction.Behaviors>
 
     <Grid RowDefinitions="* Auto" RowSpacing="25">
-        <ListBox x:Name="LogsBox" ItemsSource="{CompiledBinding Logs}" Background="Transparent"
-                 CornerRadius="{StaticResource ControlCornerRadius}" SelectedIndex="{CompiledBinding Selected, Mode=OneWay}" Grid.Row="0">
-
-            <ListBox.Styles>
-                <Style Selector="ListBoxItem">
-                    <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}" />
-                </Style>
-            </ListBox.Styles>
-        </ListBox>
-
+        <ListBox x:Name="LogsBox" ItemsSource="{CompiledBinding Logs}" SelectedIndex="{CompiledBinding Selected, Mode=OneWay}" Grid.Row="0" />
         <Button Content="Stop" Command="{CompiledBinding StopCommand}" VerticalAlignment="Bottom" Grid.Row="1" />
     </Grid>
 </UserControl>
