@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using BetaSharp.Launcher.Features.Accounts;
 using BetaSharp.Launcher.Features.Authentication;
+using BetaSharp.Launcher.Features.Hosting;
 using BetaSharp.Launcher.Features.Playing;
 using BetaSharp.Launcher.Features.Shell;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -38,6 +39,12 @@ internal sealed partial class HomeViewModel(
     private void Play()
     {
         navigationService.Navigate<PlayingViewModel>();
+    }
+
+    [RelayCommand]
+    private void Host()
+    {
+        navigationService.Navigate<HostingViewModel>();
     }
 
     [RelayCommand]

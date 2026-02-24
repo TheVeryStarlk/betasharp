@@ -4,6 +4,7 @@ using BetaSharp.Launcher.Features.Accounts;
 using BetaSharp.Launcher.Features.Alert;
 using BetaSharp.Launcher.Features.Authentication;
 using BetaSharp.Launcher.Features.Home;
+using BetaSharp.Launcher.Features.Hosting;
 using BetaSharp.Launcher.Features.Mojang;
 using BetaSharp.Launcher.Features.Playing;
 using BetaSharp.Launcher.Features.Shell;
@@ -52,6 +53,7 @@ internal static partial class Bootstrapper
     [Singleton(typeof(AlertService))]
     [Singleton(typeof(ShellViewModel))]
     [Singleton(typeof(PlayingViewModel))]
+    [Singleton(typeof(HostingViewModel))]
     [Transient(typeof(ClientService))]
     [Transient(typeof(SkinService))]
     [Transient(typeof(MojangClient))]
@@ -64,5 +66,6 @@ internal static partial class Bootstrapper
     [Transient(typeof(SplashView))]
     [Transient(typeof(SplashViewModel))]
     [Transient(typeof(PlayingView))]
+    [Transient(typeof(HostingView))]
     private static partial void ConfigureServices(IServiceCollection services);
 }
