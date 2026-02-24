@@ -10,7 +10,7 @@
         </EventTriggerBehavior>
     </Interaction.Behaviors>
 
-    <Grid RowDefinitions="* 25 Auto">
+    <Grid RowDefinitions="* Auto" RowSpacing="25">
         <ListBox x:Name="LogsBox" ItemsSource="{CompiledBinding Logs}" Background="Transparent"
                  CornerRadius="{StaticResource ControlCornerRadius}" SelectedIndex="{CompiledBinding Selected, Mode=OneWay}" Grid.Row="0">
 
@@ -21,6 +21,6 @@
             </ListBox.Styles>
         </ListBox>
 
-        <Button Content="Stop" Command="{CompiledBinding StopCommand}" VerticalAlignment="Bottom" Grid.Row="2" />
+        <Button Content="Stop" Command="{CompiledBinding StopCommand}" VerticalAlignment="Bottom" Grid.Row="1" />
     </Grid>
 </UserControl>
