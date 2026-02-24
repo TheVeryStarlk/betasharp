@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
-namespace BetaSharp.Launcher.Features.Playing;
+namespace BetaSharp.Launcher.Features.Client;
 
 internal sealed class ClientService(IHttpClientFactory clientFactory)
 {

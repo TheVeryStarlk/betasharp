@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using BetaSharp.Launcher.Features.Accounts;
+using BetaSharp.Launcher.Features.Client;
 using BetaSharp.Launcher.Features.Home;
 using BetaSharp.Launcher.Features.Shell;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -21,7 +22,14 @@ internal sealed partial class PlayingViewModel(NavigationService navigationServi
     private Process? _process;
     private TaskCompletionSource? _completion;
 
-    private readonly ProcessStartInfo _info = new() { FileName = Path.Combine(AppContext.BaseDirectory, "Client", "BetaSharp.Client"), RedirectStandardInput = true, RedirectStandardOutput = true, RedirectStandardError = true };
+    private readonly ProcessStartInfo _info = new()
+    {
+        FileName = Path.Combine(AppContext.BaseDirectory, "Client", "BetaSharp.Client"),
+        RedirectStandardInput = true,
+        RedirectStandardOutput = true,
+        RedirectStandardError = true,
+        CreateNoWindow = true
+    };
 
     [RelayCommand]
     private async Task InitializeAsync()
@@ -58,9 +66,11 @@ internal sealed partial class PlayingViewModel(NavigationService navigationServi
         ArgumentNullException.ThrowIfNull(_completion);
 
         _completion.SetResult();
+        _completion = null;
 
         _process.Kill(entireProcessTree: true);
         _process.Dispose();
+        _process = null;
     }
 
     private async Task ReadingAsync()

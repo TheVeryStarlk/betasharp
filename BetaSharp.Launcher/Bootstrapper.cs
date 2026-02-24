@@ -3,6 +3,7 @@ using System.IO;
 using BetaSharp.Launcher.Features.Accounts;
 using BetaSharp.Launcher.Features.Alert;
 using BetaSharp.Launcher.Features.Authentication;
+using BetaSharp.Launcher.Features.Client;
 using BetaSharp.Launcher.Features.Home;
 using BetaSharp.Launcher.Features.Hosting;
 using BetaSharp.Launcher.Features.Mojang;

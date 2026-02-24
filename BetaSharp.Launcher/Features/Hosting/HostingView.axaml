@@ -17,7 +17,7 @@
 
         <Grid ColumnDefinitions="0.25* *" ColumnSpacing="10" VerticalAlignment="Bottom" Grid.Row="1">
             <!-- ReSharper disable once Xaml.StyleClassNotFound -->
-            <Button Content="{CompiledBinding Message}" Command="{CompiledBinding StartCommand}" Classes="accent" Grid.Column="1" />
+            <Button Content="{CompiledBinding Message}" Command="{CompiledBinding ToggleCommand}" Classes="accent" Grid.Column="1" />
 
             <Button Content="Back" Command="{CompiledBinding BackCommand}" Grid.Column="0" />
         </Grid>
