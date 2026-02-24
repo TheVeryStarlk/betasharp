@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using BetaSharp.Launcher.Features.Client;
 using BetaSharp.Launcher.Features.Home;
@@ -15,6 +16,9 @@ internal sealed partial class HostingViewModel(NavigationService navigationServi
 {
     [ObservableProperty]
     public partial int Selected { get; set; }
+
+    [ObservableProperty]
+    public partial string? Command { get; set; }
 
     public ObservableCollection<string> Logs { get; } = [];
 
@@ -85,6 +89,16 @@ internal sealed partial class HostingViewModel(NavigationService navigationServi
     private void Back()
     {
         navigationService.Navigate<HomeViewModel>();
+    }
+
+    [RelayCommand]
+    private async Task EnterAsync()
+    {
+        ArgumentNullException.ThrowIfNull(_process);
+
+        await _process.StandardInput.WriteLineAsync(Command);
+
+        Command = string.Empty;
     }
 
     private async Task ReadingAsync()
