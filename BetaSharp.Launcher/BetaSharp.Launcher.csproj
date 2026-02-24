@@ -19,6 +19,10 @@
     <ProjectReference Include="..\BetaSharp.Client\BetaSharp.Client.csproj"
                       ReferenceOutputAssembly="false"
                       Private="false"/>
+
+    <ProjectReference Include="..\BetaSharp.Client\BetaSharp.Server.csproj"
+                      ReferenceOutputAssembly="false"
+                      Private="false"/>
   </ItemGroup>
 
   <Target Name="_CopyClientOutput">
@@ -45,6 +49,32 @@
     <MSBuild Projects="$(MSBuildProjectFile)"
              Targets="_CopyClientOutput"
              Properties="ClientCopyDestination=$(PublishDir)Client\"/>
+  </Target>
+
+  <Target Name="_CopyServerOutput">
+    <PropertyGroup>
+      <ServerOutputDir>..\BetaSharp.Server\bin\$(Configuration)\$(TargetFramework)\</ServerOutputDir>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ServerFiles Include="$(ServerOutputDir)**\*.*"/>
+    </ItemGroup>
+
+    <Copy SourceFiles="@(ServerFiles)"
+          DestinationFiles="@(ServerFiles->'$(ServerCopyDestination)%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"/>
+  </Target>
+
+  <Target Name="CopyServerOutputBuild" AfterTargets="Build">
+    <MSBuild Projects="$(MSBuildProjectFile)"
+             Targets="_CopyServerOutput"
+             Properties="ServerCopyDestination=$(OutputPath)Server\"/>
+  </Target>
+
+  <Target Name="CopyServerOutputPublish" AfterTargets="Publish">
+    <MSBuild Projects="$(MSBuildProjectFile)"
+             Targets="_CopyServerOutput"
+             Properties="ServerCopyDestination=$(PublishDir)Server\"/>
   </Target>
 
   <ItemGroup>

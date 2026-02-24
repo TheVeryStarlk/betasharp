@@ -39,11 +39,11 @@ internal sealed partial class HostingViewModel(NavigationService navigationServi
             return;
         }
 
-        Started = true;
-
         Message = "Starting";
 
         await Task.Delay(1000);
+
+        Started = true;
 
         Message = "Stop";
     }
