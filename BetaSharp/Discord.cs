@@ -5,7 +5,7 @@ namespace BetaSharp;
 
 public static class Discord
 {
-    public const ulong Id = 1410068565884665937;
+    public static ulong Id { get; set; }
 
     public static DiscordClient? Client { get; set; }
 

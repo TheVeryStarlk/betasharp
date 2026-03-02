@@ -263,15 +263,13 @@ public abstract class MinecraftServer : Runnable, CommandOutput
 ;
                 Discord.Client?.MessageCreated += async (_, eventArgs) =>
                 {
-                    Console.WriteLine("Test test test test test test test test test test");
-
                     if (eventArgs.MentionedUsers.Any(user => user.IsCurrent))
                     {
                         await eventArgs.Message.RespondAsync("Join 20.19.33.224");
                         return;
                     }
 
-                    if (eventArgs.Message.Author.IsCurrent || eventArgs.Channel.Id is not Discord.Id)
+                    if (eventArgs.Message.Author.IsCurrent || eventArgs.Channel.Id != Discord.Id)
                     {
                         return;
                     }
