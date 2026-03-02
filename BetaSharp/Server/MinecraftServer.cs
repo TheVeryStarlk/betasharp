@@ -263,6 +263,8 @@ public abstract class MinecraftServer : Runnable, CommandOutput
 ;
                 Discord.Client?.MessageCreated += async (_, eventArgs) =>
                 {
+                    Console.WriteLine("Test test test test test test test test test test");
+
                     if (eventArgs.MentionedUsers.Any(user => user.IsCurrent))
                     {
                         await eventArgs.Message.RespondAsync("Join 20.19.33.224");
@@ -274,7 +276,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                         return;
                     }
 
-                    playerManager.sendToAll(new ChatMessagePacket($"<{eventArgs.Author.Username} (Discord)> {eventArgs.Message.Content}"));
+                    playerManager.sendToAll(new ChatMessagePacket($"<{eventArgs.Author.Username} Discord> {eventArgs.Message.Content}"));
                 };
 
                 long accumulatedTime = 0L;
