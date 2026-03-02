@@ -13,6 +13,7 @@ using java.util;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Threading;
+using BetaSharp.Network.Packets.Play;
 using Exception = System.Exception;
 
 namespace BetaSharp.Server;
@@ -260,6 +261,22 @@ public abstract class MinecraftServer : Runnable, CommandOutput
             {
                 long lastTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
 ;
+                Discord.Client?.MessageCreated += async (_, eventArgs) =>
+                {
+                    if (eventArgs.MentionedUsers.Any(user => user.IsCurrent))
+                    {
+                        await eventArgs.Message.RespondAsync("Join 20.19.33.224");
+                        return;
+                    }
+
+                    if (eventArgs.Message.Author.IsCurrent || eventArgs.Channel.Id is not Discord.Id)
+                    {
+                        return;
+                    }
+
+                    playerManager.sendToAll(new ChatMessagePacket($"<{eventArgs.Author.Username} (Discord)> {eventArgs.Message.Content}"));
+                };
+
                 long accumulatedTime = 0L;
                 _lastTpsTime = lastTime;
                 _ticksThisSecond = 0;

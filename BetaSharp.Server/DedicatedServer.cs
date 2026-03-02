@@ -2,6 +2,8 @@ using System.Net;
 using System.Net.Sockets;
 using BetaSharp.Server.Network;
 using BetaSharp.Server.Threading;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using java.lang;
 using Microsoft.Extensions.Logging;
 using Exception = System.Exception;
@@ -69,9 +71,21 @@ internal class DedicatedServer(IServerConfiguration config) : MinecraftServer(co
         return base.Init();
     }
 
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         Log.Instance.Initialize(Directory.GetCurrentDirectory());
+
+        var configuration = new DiscordConfiguration
+        {
+            Token = args[0],
+            Intents = DiscordIntents.GuildMessages | DiscordIntents.MessageContents
+        };
+
+        Discord.Client = new DiscordClient(configuration);
+
+        await Discord.Client.ConnectAsync(new DiscordActivity("20.19.33.224", ActivityType.Playing), UserStatus.Online);
+
+        Discord.Channel = await Discord.Client.GetChannelAsync(Discord.Id);
 
         try
         {
@@ -84,6 +98,8 @@ internal class DedicatedServer(IServerConfiguration config) : MinecraftServer(co
         {
             s_logger.LogError($"Failed to start the minecraft server: {e}");
         }
+
+        await Task.Delay(-1);
     }
 
     public override java.io.File getFile(string path)

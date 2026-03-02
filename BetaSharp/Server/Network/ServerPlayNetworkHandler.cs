@@ -458,7 +458,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
         }
     }
 
-    public override void onChatMessage(ChatMessagePacket packet)
+    public override async void onChatMessage(ChatMessagePacket packet)
     {
         string var2 = packet.chatMessage;
         if (var2.Length > 100)
@@ -490,6 +490,8 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             }
             else
             {
+                await Discord.Channel!.SendMessageAsync("<" + player.name + "> " + var2);
+
                 var2 = "<" + player.name + "> " + var2;
                 _logger.LogInformation(var2);
                 server.playerManager.sendToAll(new ChatMessagePacket(var2));
