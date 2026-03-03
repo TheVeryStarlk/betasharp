@@ -219,7 +219,7 @@ public class PlayerManager
         }
 
         // Remove from source chunk map NOW, while player.x/z are still in
-        // source-dimension space. 
+        // source-dimension space.
         GetChunkMap(sourceDim).removePlayer(player);
 
         player.dimensionId = targetDim;
@@ -261,7 +261,7 @@ public class PlayerManager
             targetWorld.chunkCache.forceLoad = false;
 
             // Fully drain lighting updates generated during portal chunk
-            // creation before the chunks are queued for the client. 
+            // creation before the chunks are queued for the client.
             while (targetWorld.doLightingUpdates()) { }
         }
 
@@ -300,6 +300,9 @@ public class PlayerManager
             ServerPlayerEntity var3 = players[var2];
             var3.networkHandler.sendPacket(packet);
         }
+
+        if (packet is ChatMessagePacket message)
+            Discord.Channel!.SendMessageAsync(message.chatMessage);
     }
 
     public void sendToDimension(Packet packet, int dimensionId)
