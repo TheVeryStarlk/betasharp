@@ -60,6 +60,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
         player.onDisconnect();
         sendPacket(new DisconnectPacket(reason));
         connection.disconnect();
+        Discord.Channel!.SendMessageAsync($"{player.name} left the game.");
         server.playerManager.sendToAll(new ChatMessagePacket("§e" + player.name + " left the game."));
         server.playerManager.disconnect(player);
         disconnected = true;
@@ -429,6 +430,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
     public override void onDisconnected(string reason, object[]? objects)
     {
         _logger.LogInformation($"{player.name} lost connection: {reason}");
+        Discord.Channel!.SendMessageAsync($"{player.name} left the game.");
         server.playerManager.sendToAll(new ChatMessagePacket("§e" + player.name + " left the game."));
         server.playerManager.disconnect(player);
         disconnected = true;
