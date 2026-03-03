@@ -300,21 +300,6 @@ public class PlayerManager
             ServerPlayerEntity var3 = players[var2];
             var3.networkHandler.sendPacket(packet);
         }
-
-        if (packet is not ChatMessagePacket message)
-        {
-            return;
-        }
-
-        int index = message.chatMessage.IndexOf('>');
-
-        if (index < 1)
-        {
-            return;
-        }
-
-        if (!message.chatMessage[..index].Contains(" Discord"))
-            Discord.Channel!.SendMessageAsync(message.chatMessage);
     }
 
     public void sendToDimension(Packet packet, int dimensionId)
