@@ -306,7 +306,14 @@ public class PlayerManager
             return;
         }
 
-        if (!message.chatMessage[..message.chatMessage.IndexOf('>')].Contains(" Discord"))
+        int index = message.chatMessage.IndexOf('>');
+
+        if (index < 1)
+        {
+            return;
+        }
+
+        if (!message.chatMessage[..].Contains(" Discord"))
             Discord.Channel!.SendMessageAsync(message.chatMessage);
     }
 
