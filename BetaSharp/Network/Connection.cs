@@ -10,8 +10,6 @@ public class Connection
 {
     private readonly ILogger<Connection> _logger = Log.Instance.For<Connection>();
     public static readonly object LOCK = new();
-    public static int READ_THREAD_COUNTER;
-    public static int WRITE_THREAD_COUNTER;
     protected object lck = new();
     private Socket? _socket;
     private readonly IPEndPoint? _address;
@@ -21,8 +19,8 @@ public class Connection
     protected readonly List<Packet> delayedSendQueue = [];
     protected NetHandler? networkHandler;
     protected bool closed;
-    private readonly JavaThread _writer;
-    private readonly JavaThread _reader;
+    private readonly Task _writer;
+    private readonly Task _reader;
     protected bool disconnected;
     protected string disconnectedReason = "";
     protected object[]? disconnectReasonArgs;
@@ -46,10 +44,60 @@ public class Connection
 
         _networkStream = new NetworkStream(socket);
 
-        _reader = new NetworkReaderThread(this, address + " read thread");
-        _writer = new NetworkWriterThread(this, address + " write thread");
-        _reader.start();
-        _writer.start();
+        _reader = Task.Factory.StartNew(
+            () =>
+            {
+                while (!closed)
+                {
+                    if (!isOpen(this))
+                    {
+                        break;
+                    }
+
+                    if (isClosed(this))
+                    {
+                        break;
+                    }
+
+                    while (readPacket(this))
+                    {
+                    }
+
+                    waitForSignal(10);
+                }
+            },
+            TaskCreationOptions.LongRunning);
+
+        _writer = Task.Factory.StartNew(
+            () =>
+            {
+                while (!closed)
+                {
+                    if (!isOpen(this))
+                    {
+                        break;
+                    }
+
+                    while (writePacket(this))
+                    {
+                    }
+
+                    waitForSignal(10);
+
+                    try
+                    {
+                        getOutputStream(this)?.Flush();
+                    }
+                    catch (IOException ex)
+                    {
+                        if (!isDisconnected(this))
+                        {
+                            disconnect(this, ex);
+                        }
+                    }
+                }
+            },
+            TaskCreationOptions.LongRunning);
     }
 
     protected Connection()
@@ -210,7 +258,7 @@ public class Connection
             disconnected = true;
             this.disconnectedReason = disconnectedReason;
             this.disconnectReasonArgs = disconnectReasonArgs;
-            new NetworkMasterThread(this).start();
+
             open = false;
 
             try
@@ -288,7 +336,23 @@ public class Connection
     {
         interrupt();
         closed = true;
-        new ThreadCloseConnection(this).Start();
+
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(2000);
+
+            try
+            {
+                if (isOpen(this))
+                {
+                    disconnect(this, new Exception("disconnect.closed"));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error closing connection");
+            }
+        });
     }
 
     public int getDelayedSendQueueSize()
@@ -329,15 +393,5 @@ public class Connection
     public static void disconnect(Connection conn, Exception ex)
     {
         conn.disconnect(ex);
-    }
-
-    public static JavaThread getReader(Connection conn)
-    {
-        return conn._reader;
-    }
-
-    public static JavaThread getWriter(Connection conn)
-    {
-        return conn._writer;
     }
 }
