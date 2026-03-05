@@ -1,16 +1,13 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Avalonia.Media.Imaging;
 using BetaSharp.Launcher.Features.Authentication;
 using BetaSharp.Launcher.Features.Sessions;
 using BetaSharp.Launcher.Features.Shell;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Launcher.Features.Home;
 

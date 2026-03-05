@@ -15,10 +15,10 @@ internal sealed partial class SplashViewModel(StorageService storageService, Nav
     private async Task InitializeAsync()
     {
         // Let everyone appreciate BetaSharp's logo.
-        var delay = Task.Delay(2500);
+        // var delay = Task.Delay(2500);
         var session = await storageService.GetAsync(SessionSerializerContext.Default.Session);
 
-        await delay;
+        // await delay;
 
         if (session?.HasExpired ?? true)
         {
