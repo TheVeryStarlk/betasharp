@@ -12,8 +12,6 @@ public abstract class Packet
     public static readonly ObjectFactoryPool<Packet, PacketRegisterItem> Registry = new(256);
     private static readonly ILogger<Packet> s_logger = Log.Instance.For<Packet>();
 
-    private static readonly Dictionary<int, PacketTracker> s_trackers = new();
-
     public readonly byte Id;
 
     protected Packet(byte id)
@@ -81,14 +79,6 @@ public abstract class Packet
             s_logger.LogInformation("Reached end of stream : " + e.Message);
             return null;
         }
-
-        if (!s_trackers.TryGetValue(rawId, out PacketTracker? tracker))
-        {
-            tracker = new PacketTracker();
-            s_trackers.Add(rawId, tracker);
-        }
-
-        tracker.update(packet.Size());
 
         return packet;
     }
