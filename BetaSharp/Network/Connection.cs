@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using BetaSharp.Network.Packets;
@@ -16,7 +17,7 @@ public class Connection
     public int Lag { get; set; }
 
     protected bool IsOpen { get; set; } = true;
-    protected List ReadQueue { get; } = Collections.synchronizedList(new ArrayList());
+    protected ConcurrentQueue<Packet> ReadingQueue { get; } = new();
     protected NetHandler? NetworkHandler { get; set; }
     protected bool IsClosed { get; set; }
     protected bool IsDisconnected { get; set; }
@@ -177,7 +178,7 @@ public class Connection
                 int[] sizeStats = s_totalReadSize;
                 int packetId = packet.Id;
                 sizeStats[packetId] += packet.Size() + 1;
-                ReadQueue.add(packet);
+                ReadingQueue.Enqueue(packet);
                 receivedPacket = true;
             }
             else
@@ -236,7 +237,7 @@ public class Connection
             disconnect("disconnect.overflow");
         }
 
-        if (ReadQueue.isEmpty())
+        if (ReadingQueue.IsEmpty)
         {
             if (_timeout++ == 1200)
             {
@@ -251,7 +252,7 @@ public class Connection
         processPackets();
 
         interrupt();
-        if (IsDisconnected && ReadQueue.isEmpty())
+        if (IsDisconnected && ReadingQueue.IsEmpty)
         {
             NetworkHandler?.onDisconnected(DisconnectedReason, DisconnectReasonArgs);
         }
@@ -266,9 +267,13 @@ public class Connection
 
         int maxPacketsPerTick = 100;
 
-        while (!ReadQueue.isEmpty() && maxPacketsPerTick-- >= 0)
+        while (!ReadingQueue.IsEmpty && maxPacketsPerTick-- >= 0)
         {
-            Packet packet = (Packet)ReadQueue.remove(0);
+            if (!ReadingQueue.TryDequeue(out var packet))
+            {
+                continue;
+            }
+
             packet.Apply(NetworkHandler);
             packet.Return();
         }
