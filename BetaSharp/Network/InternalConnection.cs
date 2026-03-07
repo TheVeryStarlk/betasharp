@@ -12,7 +12,7 @@ public class InternalConnection : Connection
 
     private readonly ILogger<InternalConnection> _logger = Log.Instance.For<InternalConnection>();
 
-    public InternalConnection(NetHandler? networkHandler, string name)
+    public InternalConnection(NetworkHandler? networkHandler, string name)
     {
         this.NetworkHandler = networkHandler;
         Name = name;
@@ -83,7 +83,7 @@ public class InternalConnection : Connection
         {
             IsDisconnected = true;
             this.DisconnectedReason = disconnectedReason;
-            this.DisconnectReasonArgs = disconnectReasonArgs;
+            this.DisconnectReasonArguments = disconnectReasonArgs;
 
             _logger.LogInformation($"[{Name}] Disconnected: {disconnectedReason}");
 
@@ -100,7 +100,7 @@ public class InternalConnection : Connection
         {
             IsDisconnected = true;
             DisconnectedReason = reason;
-            DisconnectReasonArgs = args;
+            DisconnectReasonArguments = args;
             _logger.LogInformation($"[{Name}] Remote disconnected: {reason}");
         }
     }
@@ -119,7 +119,7 @@ public class InternalConnection : Connection
         processPackets();
         if (IsDisconnected && ReadQueue.IsEmpty)
         {
-            NetworkHandler?.onDisconnected(DisconnectedReason, DisconnectReasonArgs);
+            NetworkHandler?.onDisconnected(DisconnectedReason, DisconnectReasonArguments);
         }
     }
 

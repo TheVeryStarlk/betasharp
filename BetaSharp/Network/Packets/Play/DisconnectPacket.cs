@@ -22,7 +22,7 @@ public class DisconnectPacket() : Packet(PacketId.Disconnect)
         stream.WriteLongString(reason);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onDisconnect(this);
     }

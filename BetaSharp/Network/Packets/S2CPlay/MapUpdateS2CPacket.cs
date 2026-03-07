@@ -31,7 +31,7 @@ public class MapUpdateS2CPacket() : Packet(PacketId.MapUpdateS2C)
         stream.Write(updateData);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onMapUpdate(this);
     }

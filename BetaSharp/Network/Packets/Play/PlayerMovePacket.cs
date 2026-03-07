@@ -19,7 +19,7 @@ public class PlayerMovePacket(PacketId id = PacketId.PlayerMove) : Packet(id)
         this.onGround = onGround;
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onPlayerMove(this);
     }

@@ -38,7 +38,7 @@ public class BlockUpdateS2CPacket() : Packet(PacketId.BlockUpdateS2C)
         stream.WriteByte((byte)blockMetadata);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onBlockUpdate(this);
     }

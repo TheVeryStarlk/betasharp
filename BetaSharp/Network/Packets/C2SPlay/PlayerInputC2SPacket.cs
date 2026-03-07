@@ -31,7 +31,7 @@ public class PlayerInputC2SPacket() : Packet(PacketId.PlayerInputC2S)
         stream.WriteBoolean(sneaking);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onPlayerInput(this);
     }

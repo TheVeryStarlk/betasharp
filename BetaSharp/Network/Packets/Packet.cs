@@ -103,7 +103,7 @@ public abstract class Packet
 
     public abstract void Write(NetworkStream stream);
 
-    public abstract void Apply(NetHandler handler);
+    public abstract void Apply(NetworkHandler handler);
 
     public abstract int Size();
 

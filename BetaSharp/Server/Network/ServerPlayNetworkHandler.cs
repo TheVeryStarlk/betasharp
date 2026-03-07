@@ -18,7 +18,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server.Network;
 
-public class ServerPlayNetworkHandler : NetHandler, CommandOutput
+public class ServerPlayNetworkHandler : NetworkHandler, CommandOutput
 {
     public Connection connection;
     public bool disconnected;
@@ -431,7 +431,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
         var2.bypassSpawnProtection = false;
     }
 
-    public override void onDisconnected(string reason, object[]? objects)
+    public override void onDisconnected(string reason, object[]? parameters)
     {
         _logger.LogInformation($"{player.name} lost connection: {reason}");
         server.playerManager.disconnect(player);

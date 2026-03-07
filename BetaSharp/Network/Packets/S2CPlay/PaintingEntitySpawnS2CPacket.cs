@@ -42,7 +42,7 @@ public class PaintingEntitySpawnS2CPacket() : Packet(PacketId.PaintingEntitySpaw
         stream.WriteInt(direction);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onPaintingEntitySpawn(this);
     }

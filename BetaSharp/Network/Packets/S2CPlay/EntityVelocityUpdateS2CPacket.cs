@@ -66,7 +66,7 @@ public class EntityVelocityUpdateS2CPacket() : PacketBaseEntity(PacketId.EntityV
         stream.WriteShort((short)motionZ);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onEntityVelocityUpdate(this);
     }

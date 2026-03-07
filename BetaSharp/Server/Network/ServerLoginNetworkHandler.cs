@@ -13,7 +13,7 @@ using Exception = System.Exception;
 
 namespace BetaSharp.Server.Network;
 
-public class ServerLoginNetworkHandler : NetHandler
+public class ServerLoginNetworkHandler : NetworkHandler
 {
     private static JavaRandom random = new();
     public Connection connection;
@@ -149,7 +149,7 @@ public class ServerLoginNetworkHandler : NetHandler
         closed = true;
     }
 
-    public override void onDisconnected(string reason, object[]? objects)
+    public override void onDisconnected(string reason, object[]? parameters)
     {
         _logger.LogInformation($"{getConnectionInfo()} lost connection");
         closed = true;

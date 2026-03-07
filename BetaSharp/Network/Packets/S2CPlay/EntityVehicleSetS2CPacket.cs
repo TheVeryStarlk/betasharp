@@ -25,7 +25,7 @@ public class EntityVehicleSetS2CPacket() : PacketBaseEntity(PacketId.EntityVehic
         stream.WriteInt(VehicleEntityId);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onEntityVehicleSet(this);
     }

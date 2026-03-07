@@ -53,7 +53,7 @@ public class PlayerSpawnS2CPacket() : Packet(PacketId.PlayerSpawnS2C)
         stream.WriteShort((short)currentItem);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onPlayerSpawn(this);
     }

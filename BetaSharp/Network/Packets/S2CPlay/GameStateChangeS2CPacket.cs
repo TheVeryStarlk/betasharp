@@ -22,7 +22,7 @@ public class GameStateChangeS2CPacket() : Packet(PacketId.GameStateChangeS2C)
         stream.WriteByte((byte)reason);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onGameStateChange(this);
     }

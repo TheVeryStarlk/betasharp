@@ -29,7 +29,7 @@ public class PlayerInteractEntityC2SPacket() : Packet(PacketId.PlayerInteractEnt
         stream.WriteByte((byte)isLeftClick);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.handleInteractEntity(this);
     }

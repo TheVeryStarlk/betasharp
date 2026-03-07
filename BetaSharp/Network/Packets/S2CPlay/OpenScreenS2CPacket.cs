@@ -17,7 +17,7 @@ public class OpenScreenS2CPacket() : Packet(PacketId.OpenScreenS2C)
         slotsCount = size;
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onOpenScreen(this);
     }

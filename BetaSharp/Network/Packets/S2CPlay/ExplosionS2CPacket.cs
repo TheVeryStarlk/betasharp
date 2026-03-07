@@ -64,7 +64,7 @@ public class ExplosionS2CPacket() : Packet(PacketId.ExplosionS2C)
         }
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onExplosion(this);
     }

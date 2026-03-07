@@ -22,7 +22,7 @@ public class ClickSlotC2SPacket() : Packet(PacketId.ClickSlotC2S)
         this.holdingShift = holdingShift;
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onClickSlot(this);
     }

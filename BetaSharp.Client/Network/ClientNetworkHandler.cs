@@ -26,7 +26,7 @@ using Socket = System.Net.Sockets.Socket;
 
 namespace BetaSharp.Client.Network;
 
-public class ClientNetworkHandler : NetHandler
+public class ClientNetworkHandler : NetworkHandler
 {
     private readonly ILogger<ClientNetworkHandler> _logger = Log.Instance.For<ClientNetworkHandler>();
 
@@ -411,13 +411,13 @@ public class ClientNetworkHandler : NetHandler
         _game.displayGuiScreen(new GuiConnectFailed("disconnect.disconnected", "disconnect.genericReason", packet.reason));
     }
 
-    public override void onDisconnected(string reason, object[]? args)
+    public override void onDisconnected(string reason, object[]? parameters)
     {
         if (!disconnected)
         {
             disconnected = true;
             _game.changeWorld(null);
-            _game.displayGuiScreen(new GuiConnectFailed("disconnect.lost", reason, args));
+            _game.displayGuiScreen(new GuiConnectFailed("disconnect.lost", reason, parameters));
         }
     }
 

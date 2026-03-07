@@ -11,7 +11,7 @@ public class PlayerRespawnPacket() : Packet(PacketId.PlayerRespawn)
         this.dimensionId = dimensionId;
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onPlayerRespawn(this);
     }

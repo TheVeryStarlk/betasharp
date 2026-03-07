@@ -21,7 +21,7 @@ public class WorldTimeUpdateS2CPacket() : Packet(PacketId.WorldTimeUpdateS2C)
         stream.WriteLong(time);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onWorldTimeUpdate(this);
     }

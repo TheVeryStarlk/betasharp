@@ -21,7 +21,7 @@ public class HealthUpdateS2CPacket() : Packet(PacketId.HealthUpdateS2C)
         stream.WriteShort((short)healthMP);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onHealthUpdate(this);
     }

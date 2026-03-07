@@ -45,7 +45,7 @@ public class UpdateSignPacket() : Packet(PacketId.UpdateSign)
 
     }
 
-    public override void Apply(NetHandler networkHandler)
+    public override void Apply(NetworkHandler networkHandler)
     {
         networkHandler.handleUpdateSign(this);
     }

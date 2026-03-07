@@ -26,7 +26,7 @@ public class ClientCommandC2SPacket() : Packet(PacketId.ClientCommandC2S)
         stream.WriteByte((byte)mode);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.handleClientCommand(this);
     }

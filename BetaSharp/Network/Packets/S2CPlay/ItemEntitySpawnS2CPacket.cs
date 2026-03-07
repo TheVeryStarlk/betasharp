@@ -59,7 +59,7 @@ public class ItemEntitySpawnS2CPacket() : Packet(PacketId.ItemEntitySpawnS2C)
         stream.WriteByte((byte)velocityZ);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onItemEntitySpawn(this);
     }

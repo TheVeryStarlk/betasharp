@@ -25,7 +25,7 @@ public class ItemPickupAnimationS2CPacket() : Packet(PacketId.ItemPickupAnimatio
         stream.WriteInt(collectorEntityId);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onItemPickupAnimation(this);
     }

@@ -37,7 +37,7 @@ public class WorldEventS2CPacket() : Packet(PacketId.WorldEventS2C)
         stream.WriteInt(data);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onWorldEvent(this);
     }

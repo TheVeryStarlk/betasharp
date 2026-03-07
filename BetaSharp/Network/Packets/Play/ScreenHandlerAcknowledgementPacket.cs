@@ -15,7 +15,7 @@ public class ScreenHandlerAcknowledgementPacket() : Packet(PacketId.ScreenHandle
         this.accepted = accepted;
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onScreenHandlerAcknowledgement(this);
     }

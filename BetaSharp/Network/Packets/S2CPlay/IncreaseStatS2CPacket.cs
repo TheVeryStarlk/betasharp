@@ -13,7 +13,7 @@ public class IncreaseStatS2CPacket() : Packet(PacketId.IncreaseStatS2C)
         this.amount = amount;
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onIncreaseStat(this);
     }

@@ -29,7 +29,7 @@ public class PlayerSpawnPositionS2CPacket() : Packet(PacketId.PlayerSpawnPositio
         stream.WriteInt(z);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onPlayerSpawnPosition(this);
     }

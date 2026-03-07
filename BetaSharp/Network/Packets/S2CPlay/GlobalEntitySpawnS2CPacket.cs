@@ -43,7 +43,7 @@ public class GlobalEntitySpawnS2CPacket() : Packet(PacketId.GlobalEntitySpawnS2C
         stream.WriteInt(z);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onLightningEntitySpawn(this);
     }

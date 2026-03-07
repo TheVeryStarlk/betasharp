@@ -61,7 +61,7 @@ public class InventoryS2CPacket() : Packet(PacketId.InventoryS2C)
 
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onInventory(this);
     }

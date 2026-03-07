@@ -39,7 +39,7 @@ public class PlayerConnectionUpdateS2CPacket() : ExtendedProtocolPacket(PacketId
         stream.WriteLongString(name);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onPlayerConnectionUpdate(this);
     }

@@ -16,7 +16,7 @@ public class ScreenHandlerSlotUpdateS2CPacket() : Packet(PacketId.ScreenHandlerS
         this.stack = stack == null ? stack : stack.copy();
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onScreenHandlerSlotUpdate(this);
     }

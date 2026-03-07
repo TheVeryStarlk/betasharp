@@ -24,7 +24,7 @@ public class EntityTrackerUpdateS2CPacket() : PacketBaseEntity(PacketId.EntityTr
         DataWatcher.WriteObjectsInListToStream(trackedValues, stream);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onEntityTrackerUpdate(this);
     }

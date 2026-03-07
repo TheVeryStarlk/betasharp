@@ -37,7 +37,7 @@ public class PlayerActionC2SPacket() : Packet(PacketId.PlayerActionC2S)
         stream.WriteByte((byte)direction);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.handlePlayerAction(this);
     }

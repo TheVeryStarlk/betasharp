@@ -13,9 +13,9 @@ public class Connection
     public bool IsDisconnected { get; set; }
 
     protected ConcurrentQueue<Packet> ReadQueue { get; } = [];
-    protected NetHandler? NetworkHandler { get; set; }
+    protected NetworkHandler? NetworkHandler { get; set; }
     protected string DisconnectedReason { get; set; } = string.Empty;
-    protected object[]? DisconnectReasonArgs { get; set; }
+    protected object[]? DisconnectReasonArguments { get; set; }
 
     private readonly object _lock = new();
     private Socket? _socket;
@@ -32,7 +32,7 @@ public class Connection
     private readonly java.lang.Thread _reader;
     private readonly ManualResetEventSlim _wakeSignal = new(false);
 
-    public Connection(Socket socket, string address, NetHandler networkHandler)
+    public Connection(Socket socket, string address, NetworkHandler networkHandler)
     {
         _socket = socket;
         _address = (IPEndPoint?)socket.RemoteEndPoint;
@@ -54,9 +54,9 @@ public class Connection
         _address = null;
     }
 
-    public void setNetworkHandler(NetHandler netHandler)
+    public void setNetworkHandler(NetworkHandler networkHandler)
     {
-        NetworkHandler = netHandler;
+        NetworkHandler = networkHandler;
     }
 
     public virtual void sendPacket(Packet packet)
@@ -206,7 +206,7 @@ public class Connection
         {
             IsDisconnected = true;
             this.DisconnectedReason = disconnectedReason;
-            this.DisconnectReasonArgs = disconnectReasonArgs;
+            this.DisconnectReasonArguments = disconnectReasonArgs;
             new NetworkMasterThread(this).start();
 
             try
@@ -248,7 +248,7 @@ public class Connection
         interrupt();
         if (IsDisconnected && ReadQueue.IsEmpty)
         {
-            NetworkHandler?.onDisconnected(DisconnectedReason, DisconnectReasonArgs);
+            NetworkHandler?.onDisconnected(DisconnectedReason, DisconnectReasonArguments);
         }
     }
 

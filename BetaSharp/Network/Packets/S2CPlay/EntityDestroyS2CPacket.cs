@@ -10,7 +10,7 @@ public class EntityDestroyS2CPacket() : PacketBaseEntity(PacketId.EntityDestroyS
         EntityId = entityId;
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onEntityDestroy(this);
     }

@@ -52,7 +52,7 @@ public class EntityPositionS2CPacket() : PacketBaseEntity(PacketId.EntityPositio
         stream.WriteByte((byte)pitch);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onEntityPosition(this);
     }

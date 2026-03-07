@@ -84,7 +84,7 @@ public class ChunkDataS2CPacket() : Packet(PacketId.ChunkDataS2C)
         stream.Write(chunkData, 0, chunkDataSize);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.handleChunkData(this);
     }

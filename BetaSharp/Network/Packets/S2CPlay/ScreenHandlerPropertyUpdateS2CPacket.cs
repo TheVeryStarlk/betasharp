@@ -15,7 +15,7 @@ public class ScreenHandlerPropertyUpdateS2CPacket() : Packet(PacketId.ScreenHand
         this.value = value;
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onScreenHandlerPropertyUpdate(this);
     }

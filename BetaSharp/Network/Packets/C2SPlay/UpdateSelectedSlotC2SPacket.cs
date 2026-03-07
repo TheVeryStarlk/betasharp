@@ -21,7 +21,7 @@ public class UpdateSelectedSlotC2SPacket() : Packet(PacketId.UpdateSelectedSlotC
         stream.WriteShort((short)selectedSlot);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onUpdateSelectedSlot(this);
     }

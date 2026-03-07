@@ -14,7 +14,7 @@ public class EntityS2CPacket(PacketId id = PacketId.EntityS2C) : PacketBaseEntit
         EntityId = entityId;
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onEntity(this);
     }

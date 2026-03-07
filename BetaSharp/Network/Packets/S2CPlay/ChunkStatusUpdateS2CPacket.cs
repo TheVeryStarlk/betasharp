@@ -29,7 +29,7 @@ public class ChunkStatusUpdateS2CPacket() : Packet(PacketId.ChunkStatusUpdateS2C
         stream.WriteBoolean(load);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onChunkStatusUpdate(this);
     }

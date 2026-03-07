@@ -31,7 +31,7 @@ public class EntityAnimationPacket() : PacketBaseEntity(PacketId.EntityAnimation
         stream.WriteByte((byte)animationId);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onEntityAnimation(this);
     }

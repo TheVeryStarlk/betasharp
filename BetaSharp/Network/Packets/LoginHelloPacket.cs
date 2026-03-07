@@ -41,7 +41,7 @@ public class LoginHelloPacket() : Packet(PacketId.LoginHello)
         stream.WriteByte((byte)dimensionId);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onHello(this);
     }

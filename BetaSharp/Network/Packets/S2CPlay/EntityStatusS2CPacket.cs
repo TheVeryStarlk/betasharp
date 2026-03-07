@@ -24,7 +24,7 @@ public class EntityStatusS2CPacket() : PacketBaseEntity(PacketId.EntityStatusS2C
         stream.WriteByte((byte)EntityStatus);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onEntityStatus(this);
     }

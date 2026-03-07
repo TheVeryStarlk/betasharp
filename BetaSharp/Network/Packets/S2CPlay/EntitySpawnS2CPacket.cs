@@ -99,7 +99,7 @@ public class EntitySpawnS2CPacket() : PacketBaseEntity(PacketId.EntitySpawnS2C)
 
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onEntitySpawn(this);
     }

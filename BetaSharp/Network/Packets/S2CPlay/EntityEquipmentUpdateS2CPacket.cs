@@ -41,7 +41,7 @@ public class EntityEquipmentUpdateS2CPacket() : PacketBaseEntity(PacketId.Entity
         stream.WriteShort((short)itemDamage);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onEntityEquipmentUpdate(this);
     }

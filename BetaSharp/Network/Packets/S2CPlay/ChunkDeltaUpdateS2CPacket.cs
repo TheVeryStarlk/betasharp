@@ -68,7 +68,7 @@ public class ChunkDeltaUpdateS2CPacket() : Packet(PacketId.ChunkDeltaUpdateS2C)
         stream.Write(blockMetadata);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onChunkDeltaUpdate(this);
     }

@@ -52,7 +52,7 @@ public class LivingEntitySpawnS2CPacket() : Packet(PacketId.LivingEntitySpawnS2C
         metaData.WriteWatchableObjects(stream);
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onLivingEntitySpawn(this);
     }

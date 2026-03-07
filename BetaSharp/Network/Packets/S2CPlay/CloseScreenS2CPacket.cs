@@ -11,7 +11,7 @@ public class CloseScreenS2CPacket() : Packet(PacketId.CloseScreenS2C)
         this.windowId = windowId;
     }
 
-    public override void Apply(NetHandler handler)
+    public override void Apply(NetworkHandler handler)
     {
         handler.onCloseScreen(this);
     }
