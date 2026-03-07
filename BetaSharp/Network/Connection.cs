@@ -3,7 +3,6 @@ using System.Net;
 using System.Net.Sockets;
 using BetaSharp.Network.Packets;
 using BetaSharp.Threading;
-using java.util;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Network;
@@ -14,7 +13,6 @@ public class Connection
     private static readonly int[] s_totalSendSize = new int[256];
 
     public bool BetaSharpClient { get; set; }
-    public int Lag { get; set; }
 
     protected bool IsOpen { get; set; } = true;
     protected ConcurrentQueue<Packet> ReadQueue { get; } = [];
@@ -103,7 +101,7 @@ public class Connection
             Packet? packet;
             object lockObj;
 
-            if (!_sendQueue.IsEmpty /* && (Lag == 0 || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - ((Packet)_sendQueue.get(0)).CreationTime >= Lag) */)
+            if (!_sendQueue.IsEmpty)
             {
                 lockObj = _lock;
                 lock (lockObj)
@@ -123,7 +121,7 @@ public class Connection
                 packet.Return();
             }
 
-            if (_delay-- <= 0 && !_delayedSendQueue.IsEmpty /* && (Lag == 0 || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - ((Packet)_delayedSendQueue.get(0)).CreationTime >= Lag) */ )
+            if (!_delayedSendQueue.IsEmpty &&  _delay-- <= 0)
             {
                 lockObj = _lock;
                 lock (lockObj)

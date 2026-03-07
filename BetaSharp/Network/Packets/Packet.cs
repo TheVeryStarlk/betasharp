@@ -14,8 +14,6 @@ public abstract class Packet
 
     private static readonly Dictionary<int, PacketTracker> s_trackers = new();
 
-    public readonly long CreationTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
     public readonly byte Id;
 
     protected Packet(byte id)
