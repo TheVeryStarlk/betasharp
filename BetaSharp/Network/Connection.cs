@@ -2,7 +2,6 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using BetaSharp.Network.Packets;
-using BetaSharp.Threading;
 using Microsoft.Extensions.Logging;
 using Thread = java.lang.Thread;
 
@@ -55,7 +54,7 @@ public class Connection
     {
     }
 
-    public virtual void sendPacket(Packet packet)
+    public virtual void queuePacket(Packet packet)
     {
         if (IsDisconnected || !BetaSharpClient && packet is ExtendedProtocolPacket)
         {
@@ -116,7 +115,7 @@ public class Connection
         {
             if (!IsDisconnected)
             {
-                disconnect(exception);
+                disconnect(exception: exception);
             }
 
             return false;
@@ -150,7 +149,7 @@ public class Connection
         {
             if (!IsDisconnected)
             {
-                disconnect(exception);
+                disconnect(exception: exception);
             }
 
             return false;
@@ -202,19 +201,15 @@ public class Connection
         }
     }
 
-    public virtual void disconnect()
+    public virtual void disconnect(string reason = "disconnect.genericReason", Exception? exception = null)
     {
-        new ThreadCloseConnection(this).Start();
-    }
+        if (exception is not null)
+        {
+            _logger.LogError(exception, "An exception has occurred and connection had to be terminated");
+        }
 
-    public void disconnect(Exception exception)
-    {
-        _logger.LogError(exception, "An exception has occurred and connection had to be terminated");
-        disconnect("disconnect.genericReason", exception);
-    }
+        exception ??= new Exception("disconnect.closed");
 
-    public virtual void disconnect(string disconnectedReason, Exception? disconnectedException = null)
-    {
         if (IsDisconnected)
         {
             return;
@@ -222,8 +217,8 @@ public class Connection
 
         IsDisconnected = true;
 
-        DisconnectedReason = disconnectedReason;
-        DisconnectedException = disconnectedException;
+        DisconnectedReason = reason;
+        DisconnectedException = exception;
 
         try
         {

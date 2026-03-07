@@ -27,7 +27,7 @@ internal class NetworkWriterThread(Connection connection, string name) : java.la
                 {
                     if (!connection.IsDisconnected)
                     {
-                        connection.disconnect(exception);
+                        connection.disconnect(exception: exception);
                         exception.printStackTrace();
                     }
                 }

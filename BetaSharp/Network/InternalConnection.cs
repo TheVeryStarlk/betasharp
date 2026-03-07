@@ -23,7 +23,7 @@ public class InternalConnection : Connection
         RemoteConnection = remote;
     }
 
-    public override void sendPacket(Packet packet)
+    public override void queuePacket(Packet packet)
     {
         if (!IsDisconnected)
         {
@@ -61,6 +61,7 @@ public class InternalConnection : Connection
 
             count++;
         }
+
         if (count > 0)
         {
             // _logger.LogInformation($"[{Name}] Processed {count} packets");
@@ -77,20 +78,20 @@ public class InternalConnection : Connection
         return false;
     }
 
-    public override void disconnect(string disconnectedReason, Exception? disconnectedException = null)
+    public override void disconnect(string reason, Exception? exception = null)
     {
         if (!IsDisconnected)
         {
             IsDisconnected = true;
 
-            DisconnectedReason = disconnectedReason;
-            DisconnectedException = disconnectedException;
+            DisconnectedReason = reason;
+            DisconnectedException = exception;
 
-            _logger.LogInformation($"[{Name}] Disconnected: {disconnectedReason}");
+            _logger.LogInformation($"[{Name}] Disconnected: {reason}");
 
             if (RemoteConnection != null && !RemoteConnection.IsDisconnected)
             {
-                RemoteConnection.OnRemoteDisconnect(disconnectedReason, disconnectedException);
+                RemoteConnection.OnRemoteDisconnect(reason, exception);
             }
         }
     }
@@ -106,11 +107,6 @@ public class InternalConnection : Connection
         }
     }
 
-    public override void disconnect()
-    {
-        disconnect("Disconnecting");
-    }
-
     public override void tick()
     {
         processPackets();
@@ -120,5 +116,5 @@ public class InternalConnection : Connection
         }
     }
 
-    public override IPEndPoint? Address { get; } = new (IPAddress.Parse("127.0.0.1"), 12345);
+    public override IPEndPoint? Address { get; } = new(IPAddress.Parse("127.0.0.1"), 12345);
 }

@@ -452,7 +452,7 @@ public class ServerPlayNetworkHandler : NetworkHandler, CommandOutput
 
     public void sendPacket(Packet packet)
     {
-        connection.sendPacket(packet);
+        connection.queuePacket(packet);
         lastKeepAliveTime = ticks;
     }
 

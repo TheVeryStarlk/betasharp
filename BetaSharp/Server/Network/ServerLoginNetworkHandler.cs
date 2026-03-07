@@ -62,7 +62,7 @@ public class ServerLoginNetworkHandler : NetworkHandler
         try
         {
             _logger.LogInformation($"Disconnecting {getConnectionInfo()}: {reason}");
-            connection.sendPacket(new DisconnectPacket(reason));
+            connection.queuePacket(new DisconnectPacket(reason));
             connection.disconnect();
             closed = true;
         }
@@ -77,11 +77,11 @@ public class ServerLoginNetworkHandler : NetworkHandler
         if (server.onlineMode)
         {
             serverId = Long.toHexString(random.NextLong());
-            connection.sendPacket(new HandshakePacket(serverId));
+            connection.queuePacket(new HandshakePacket(serverId));
         }
         else
         {
-            connection.sendPacket(new HandshakePacket("-"));
+            connection.queuePacket(new HandshakePacket("-"));
         }
     }
 

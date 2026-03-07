@@ -82,7 +82,7 @@ public class ClientNetworkHandler : NetworkHandler
     {
         if (!disconnected)
         {
-            netManager.sendPacket(packet);
+            netManager.queuePacket(packet);
             lastKeepAliveTime = ticks;
         }
     }
