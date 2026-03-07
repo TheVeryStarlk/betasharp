@@ -41,7 +41,7 @@ public class InternalConnection : Connection
         ReadQueue.Enqueue(packet);
     }
 
-    protected override void processPackets()
+    protected override void ProcessPackets()
     {
         if (NetworkHandler == null)
         {
@@ -99,7 +99,7 @@ public class InternalConnection : Connection
 
     public override void tick()
     {
-        processPackets();
+        ProcessPackets();
         if (IsDisconnected && ReadQueue.IsEmpty)
         {
             NetworkHandler?.onDisconnected(DisconnectedReason, DisconnectedException);

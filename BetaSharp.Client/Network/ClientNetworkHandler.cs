@@ -55,7 +55,7 @@ public class ClientNetworkHandler : NetworkHandler
 
         socket.Connect(endPoint);
 
-        netManager = new Connection(socket, "Client", this);
+        netManager = new Connection(socket, this);
     }
 
     public ClientNetworkHandler(BetaSharp game, Connection connection)

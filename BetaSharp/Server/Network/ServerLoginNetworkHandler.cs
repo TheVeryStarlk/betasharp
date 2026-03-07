@@ -29,7 +29,7 @@ public class ServerLoginNetworkHandler : NetworkHandler
     public ServerLoginNetworkHandler(BetaSharpServer server, Socket socket, string name)
     {
         this.server = server;
-        connection = new Connection(socket, name, this);
+        connection = new Connection(socket, this);
     }
 
     public ServerLoginNetworkHandler(BetaSharpServer server, Connection connection)
