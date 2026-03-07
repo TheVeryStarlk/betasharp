@@ -17,7 +17,7 @@ public class Connection
     public int Lag { get; set; }
 
     protected bool IsOpen { get; set; } = true;
-    protected ConcurrentQueue<Packet> ReadingQueue { get; } = new();
+    protected ConcurrentQueue<Packet> ReadQueue { get; } = new();
     protected NetHandler? NetworkHandler { get; set; }
     protected bool IsClosed { get; set; }
     protected bool IsDisconnected { get; set; }
@@ -178,7 +178,7 @@ public class Connection
                 int[] sizeStats = s_totalReadSize;
                 int packetId = packet.Id;
                 sizeStats[packetId] += packet.Size() + 1;
-                ReadingQueue.Enqueue(packet);
+                ReadQueue.Enqueue(packet);
                 receivedPacket = true;
             }
             else
@@ -237,7 +237,7 @@ public class Connection
             disconnect("disconnect.overflow");
         }
 
-        if (ReadingQueue.IsEmpty)
+        if (ReadQueue.IsEmpty)
         {
             if (_timeout++ == 1200)
             {
@@ -252,7 +252,7 @@ public class Connection
         processPackets();
 
         interrupt();
-        if (IsDisconnected && ReadingQueue.IsEmpty)
+        if (IsDisconnected && ReadQueue.IsEmpty)
         {
             NetworkHandler?.onDisconnected(DisconnectedReason, DisconnectReasonArgs);
         }
@@ -267,9 +267,9 @@ public class Connection
 
         int maxPacketsPerTick = 100;
 
-        while (!ReadingQueue.IsEmpty && maxPacketsPerTick-- >= 0)
+        while (!ReadQueue.IsEmpty && maxPacketsPerTick-- >= 0)
         {
-            if (!ReadingQueue.TryDequeue(out var packet))
+            if (!ReadQueue.TryDequeue(out var packet))
             {
                 continue;
             }

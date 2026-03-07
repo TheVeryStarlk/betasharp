@@ -38,7 +38,7 @@ public class InternalConnection : Connection
 
     protected void ReceivePacket(Packet packet)
     {
-        ReadingQueue.Enqueue(packet);
+        ReadQueue.Enqueue(packet);
     }
 
     protected override void processPackets()
@@ -49,9 +49,9 @@ public class InternalConnection : Connection
         }
 
         int count = 0;
-        while (!ReadingQueue.IsEmpty)
+        while (!ReadQueue.IsEmpty)
         {
-            if (!ReadingQueue.TryDequeue(out var packet))
+            if (!ReadQueue.TryDequeue(out var packet))
             {
                 continue;
             }
@@ -119,7 +119,7 @@ public class InternalConnection : Connection
     public override void tick()
     {
         processPackets();
-        if (IsDisconnected && ReadingQueue.IsEmpty)
+        if (IsDisconnected && ReadQueue.IsEmpty)
         {
             NetworkHandler?.onDisconnected(DisconnectedReason, DisconnectReasonArgs);
         }
