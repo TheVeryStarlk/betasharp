@@ -4,15 +4,16 @@ using System.Net.Sockets;
 using BetaSharp.Network.Packets;
 using BetaSharp.Threading;
 using Microsoft.Extensions.Logging;
+using Thread = java.lang.Thread;
 
 namespace BetaSharp.Network;
 
 public class Connection
 {
     public virtual IPEndPoint? Address { get; }
-    public java.lang.Thread Reader { get; }
-    public java.lang.Thread Writer { get; }
-    public NetworkStream NetworkStream { get; }
+    public Thread? Reader { get; }
+    public Thread? Writer { get; }
+    public NetworkStream? NetworkStream { get; }
 
     public bool BetaSharpClient { get; set; }
     public bool IsDisconnected { get; set; }
@@ -22,13 +23,11 @@ public class Connection
     protected string DisconnectedReason { get; set; } = string.Empty;
     protected object[]? DisconnectedReasonArgs { get; set; }
 
-    private readonly Lock _lock = new();
     private Socket? _socket;
     private readonly ConcurrentQueue<Packet> _sendQueue = [];
     private readonly ConcurrentQueue<Packet> _delayedSendQueue = [];
     private int _timeout;
     private int _delay;
-    private int _sendQueueSize;
 
     private readonly ILogger<Connection> _logger = Log.Instance.For<Connection>();
     private readonly ManualResetEventSlim _wakeSignal = new(false);
@@ -68,27 +67,19 @@ public class Connection
             return;
         }
 
-        lock (_lock)
+        if (Packet.Registry[packet.Id]!.WorldPacket)
         {
-            _sendQueueSize += packet.Size() + 1;
-
-            if (Packet.Registry[packet.Id]!.WorldPacket)
-            {
-                _delayedSendQueue.Enqueue(packet);
-            }
-            else
-            {
-                _sendQueue.Enqueue(packet);
-            }
+            _delayedSendQueue.Enqueue(packet);
+        }
+        else
+        {
+            _sendQueue.Enqueue(packet);
         }
     }
 
     public virtual bool write()
     {
-        if (NetworkStream == null)
-        {
-            throw new Exception("Connection not initialized");
-        }
+        ArgumentNullException.ThrowIfNull(NetworkStream);
 
         bool wrote = false;
 
@@ -98,14 +89,9 @@ public class Connection
 
             if (!_sendQueue.IsEmpty)
             {
-                lock (_lock)
+                if (!_sendQueue.TryDequeue(out packet))
                 {
-                    if (!_sendQueue.TryDequeue(out packet))
-                    {
-                        return false;
-                    }
-
-                    _sendQueueSize -= packet.Size() + 1;
+                    return false;
                 }
 
                 Packet.Write(packet, NetworkStream);
@@ -116,19 +102,15 @@ public class Connection
 
             if (!_delayedSendQueue.IsEmpty && _delay-- <= 0)
             {
-                lock (_lock)
+                if (!_delayedSendQueue.TryDequeue(out packet))
                 {
-                    if (!_delayedSendQueue.TryDequeue(out packet))
-                    {
-                        return false;
-                    }
-
-                    _sendQueueSize -= packet.Size() + 1;
+                    return false;
                 }
 
                 Packet.Write(packet, NetworkStream);
 
                 _delay = 0;
+
                 wrote = true;
                 packet.Return();
             }
@@ -159,10 +141,8 @@ public class Connection
 
     public virtual bool read()
     {
-        if (NetworkHandler == null || NetworkStream == null)
-        {
-            throw new Exception("Connection not initialized");
-        }
+        ArgumentNullException.ThrowIfNull(NetworkStream);
+        ArgumentNullException.ThrowIfNull(NetworkHandler);
 
         bool received = false;
 
@@ -215,10 +195,8 @@ public class Connection
 
         try
         {
-            NetworkStream.Close();
-
+            NetworkStream?.Close();
             _socket?.Close();
-            _socket = null;
         }
         catch (Exception)
         {
@@ -228,7 +206,7 @@ public class Connection
 
     public virtual void tick()
     {
-        if (_sendQueueSize > 1048576)
+        if (_sendQueue.Count > 1048576)
         {
             disconnect("disconnect.overflow");
         }
@@ -246,7 +224,6 @@ public class Connection
         }
 
         processPackets();
-
         interrupt();
 
         if (IsDisconnected && ReadQueue.IsEmpty)
@@ -257,10 +234,7 @@ public class Connection
 
     protected virtual void processPackets()
     {
-        if (NetworkHandler is null)
-        {
-            throw new Exception("networkHandler is null");
-        }
+        ArgumentNullException.ThrowIfNull(NetworkHandler);
 
         int maxPacketsPerTick = 100;
 
