@@ -4,7 +4,10 @@ namespace BetaSharp.Network.Packets;
 
 public class LoginHelloPacket() : Packet(PacketId.LoginHello)
 {
-    public const long BETASHARP_CLIENT_SIGNATURE = 0x627368617270; // "bsharp" in hex. Used to identify BetaSharp clients for future protocol extensions without breaking vanilla compatibility.
+    /// <summary>
+    /// Stands for BSHARP in hexadecimal; Used to identify BetaSharp clients for future protocol extensions without breaking vanilla compatibility.
+    /// </summary>
+    public const long BetasharpClientSignature = 0x627368617270;
 
     public int protocolVersion;
     public string username;

@@ -500,7 +500,7 @@ public class ClientNetworkHandler : NetworkHandler
     {
         if (packet.username.Equals("-"))
         {
-            addToSendQueue(new LoginHelloPacket(_game.session.username, 14, LoginHelloPacket.BETASHARP_CLIENT_SIGNATURE, 0));
+            addToSendQueue(new LoginHelloPacket(_game.session.username, 14, LoginHelloPacket.BetasharpClientSignature, 0));
         }
         else
         {
@@ -514,7 +514,7 @@ public class ClientNetworkHandler : NetworkHandler
 
                 if (string.IsNullOrEmpty(response) || response.Equals("ok", StringComparison.OrdinalIgnoreCase))
                 {
-                    addToSendQueue(new LoginHelloPacket(_game.session.username, 14, LoginHelloPacket.BETASHARP_CLIENT_SIGNATURE, 0));
+                    addToSendQueue(new LoginHelloPacket(_game.session.username, 14, LoginHelloPacket.BetasharpClientSignature, 0));
                 }
                 else
                 {

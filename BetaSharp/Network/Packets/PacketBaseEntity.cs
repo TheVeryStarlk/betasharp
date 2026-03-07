@@ -8,7 +8,6 @@ public abstract class PacketBaseEntity : Packet
 
     public int EntityId { get; set; }
 
-    public PacketBaseEntity(byte id) : base(id) { }
     public PacketBaseEntity(PacketId id) : base(id) { }
 
     public override void Read(NetworkStream stream)

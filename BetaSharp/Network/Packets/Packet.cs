@@ -7,70 +7,41 @@ using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Network.Packets;
 
-public abstract class Packet
+public abstract class Packet(PacketId id)
 {
     public static readonly ObjectFactoryPool<Packet, PacketRegisterItem> Registry = new(256);
     private static readonly ILogger<Packet> s_logger = Log.Instance.For<Packet>();
 
-    public readonly byte Id;
-
-    protected Packet(byte id)
-    {
-        Id = id;
-    }
-
-    protected Packet(PacketId id)
-    {
-        Id = (byte)id;
-    }
-
-    public void Return()
-    {
-        if (Registry.TryGet(Id, out PacketRegisterItem? item))
-        {
-            item.Return(this);
-            return;
-        }
-        s_logger.LogError("Packet id " + Id + " not found");
-    }
-
-    public static void Return(Packet packet)
-    {
-        if (Registry.TryGet(packet.Id, out PacketRegisterItem? item))
-        {
-            item.Return(packet);
-            return;
-        }
-        s_logger.LogError("Packet id " + packet.Id + " not found");
-    }
+    public readonly byte Id = (byte)id;
 
     public static Packet? Read(NetworkStream stream, bool server)
     {
-        Packet packet = null;
-        int rawId;
+        Packet? packet;
+
         try
         {
-            rawId = stream.ReadByte();
-            if (rawId == -1)
+            int rawId = stream.ReadByte();
+
+            if (rawId is -1)
             {
                 return null;
             }
 
-            if (!Registry.TryGet(rawId, out PacketRegisterItem? packetR))
+            if (!Registry.TryGet(rawId, out PacketRegisterItem? packetRegistry))
             {
-                throw new IOException("Bad packet id " + rawId);
+                throw new IOException("Bad packet ID " + rawId);
             }
 
             if (server)
             {
-                if (!packetR.ServerBound) throw new IOException("Bad server bound packet id " + rawId);
+                if (!packetRegistry.ServerBound) throw new IOException("Bad server bound packet ID " + rawId);
             }
             else
             {
-                if (!packetR.ClientBound) throw new IOException("Bad client bound packet id " + rawId);
+                if (!packetRegistry.ClientBound) throw new IOException("Bad client bound packet ID " + rawId);
             }
 
-            packet = packetR.Get();
+            packet = packetRegistry.Get();
 
             packet.Read(stream);
         }
@@ -83,9 +54,11 @@ public abstract class Packet
         return packet;
     }
 
+    private static PacketRegisterItem New(PacketId rawId, bool clientBound, bool serverBound, bool worldPacket, Func<Packet> factory) => new((byte)rawId, clientBound, serverBound, worldPacket, factory);
+
     public static void Write(Packet packet, NetworkStream stream)
     {
-        stream.WriteByte((byte)packet.Id);
+        stream.WriteByte(packet.Id);
         packet.Write(stream);
     }
 
@@ -97,7 +70,20 @@ public abstract class Packet
 
     public abstract int Size();
 
-    public virtual void ProcessForInternal() { }
+    public virtual void ProcessForInternal()
+    {
+    }
+
+    public void Return()
+    {
+        if (Registry.TryGet(Id, out PacketRegisterItem? item))
+        {
+            item.Return(this);
+            return;
+        }
+
+        s_logger.LogError("Packet id " + Id + " not found");
+    }
 
     static Packet()
     {
@@ -169,7 +155,4 @@ public abstract class Packet
         public readonly bool ServerBound = serverBound;
         public readonly bool WorldPacket = worldPacket;
     }
-
-    private static PacketRegisterItem New(PacketId rawId, bool clientBound, bool serverBound, bool worldPacket, Func<Packet> factory) =>
-        new((byte)rawId, clientBound, serverBound, worldPacket, factory);
 }

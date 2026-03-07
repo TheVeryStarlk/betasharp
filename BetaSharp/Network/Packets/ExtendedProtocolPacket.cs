@@ -1,9 +1,3 @@
-﻿using System.Net.Sockets;
+﻿namespace BetaSharp.Network.Packets;
 
-namespace BetaSharp.Network.Packets;
-
-public abstract class ExtendedProtocolPacket : Packet
-{
-    public ExtendedProtocolPacket(byte id) : base(id) { }
-    public ExtendedProtocolPacket(PacketId id) : base(id) { }
-}
+public abstract class ExtendedProtocolPacket(PacketId id) : Packet(id);
