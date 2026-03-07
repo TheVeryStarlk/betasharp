@@ -10,12 +10,10 @@ namespace BetaSharp.Network;
 public class Connection
 {
     public bool BetaSharpClient { get; set; }
+    public bool IsDisconnected { get; set; }
 
-    protected bool IsOpen { get; set; } = true;
     protected ConcurrentQueue<Packet> ReadQueue { get; } = [];
     protected NetHandler? NetworkHandler { get; set; }
-    protected bool IsClosed { get; set; }
-    protected bool IsDisconnected { get; set; }
     protected string DisconnectedReason { get; set; } = string.Empty;
     protected object[]? DisconnectReasonArgs { get; set; }
 
@@ -65,7 +63,7 @@ public class Connection
     {
         if (packet is ExtendedProtocolPacket && !BetaSharpClient) return;
 
-        if (!IsClosed)
+        if (!IsDisconnected)
         {
             object lockObj = _lock;
             lock (lockObj)
@@ -204,13 +202,12 @@ public class Connection
 
     public virtual void disconnect(string disconnectedReason, params object[] disconnectReasonArgs)
     {
-        if (IsOpen)
+        if (!IsDisconnected)
         {
             IsDisconnected = true;
             this.DisconnectedReason = disconnectedReason;
             this.DisconnectReasonArgs = disconnectReasonArgs;
             new NetworkMasterThread(this).start();
-            IsOpen = false;
 
             try
             {
@@ -284,23 +281,12 @@ public class Connection
     public virtual void disconnect()
     {
         interrupt();
-        IsClosed = true;
         new ThreadCloseConnection(this).Start();
     }
 
     public int getDelayedSendQueueSize()
     {
         return _delayedSendQueue.Count;
-    }
-
-    public static bool isOpen(Connection conn)
-    {
-        return conn.IsOpen;
-    }
-
-    public static bool isClosed(Connection conn)
-    {
-        return conn.IsClosed;
     }
 
     public static bool readPacket(Connection conn)

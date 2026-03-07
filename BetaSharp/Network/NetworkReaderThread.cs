@@ -1,14 +1,7 @@
 namespace BetaSharp.Network;
 
-class NetworkReaderThread : java.lang.Thread
+class NetworkReaderThread(Connection connection, string name) : java.lang.Thread(name)
 {
-    public readonly Connection netManager;
-
-    public NetworkReaderThread(Connection var1, string var2) : base(var2)
-    {
-        this.netManager = var1;
-    }
-
     public override void run()
     {
 
@@ -16,21 +9,16 @@ class NetworkReaderThread : java.lang.Thread
         {
             try
             {
-                if (!Connection.isOpen(this.netManager))
+                if (connection.IsDisconnected)
                 {
                     break;
                 }
 
-                if (Connection.isClosed(this.netManager))
-                {
-                    break;
-                }
-
-                while (Connection.readPacket(this.netManager))
+                while (Connection.readPacket(connection))
                 {
                 }
 
-                netManager.waitForSignal(10);
+                connection.waitForSignal(10);
             }
             finally
             {

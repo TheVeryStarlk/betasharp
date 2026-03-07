@@ -1,48 +1,39 @@
 namespace BetaSharp.Network;
 
-internal class NetworkWriterThread : java.lang.Thread
+internal class NetworkWriterThread(Connection connection, string name) : java.lang.Thread(name)
 {
-    public readonly Connection netManager;
-
-    public NetworkWriterThread(Connection var1, string var2) : base(var2)
-    {
-        netManager = var1;
-    }
-
-
     public override void run()
     {
         while (true)
         {
             try
             {
-                if (!Connection.isOpen(netManager))
+                if (connection.IsDisconnected)
                 {
                     break;
                 }
 
-                while (Connection.writePacket(netManager))
+                while (Connection.writePacket(connection))
                 {
                 }
 
-                netManager.waitForSignal(10);
+                connection.waitForSignal(10);
 
                 try
                 {
-                    Connection.getOutputStream(netManager)?.Flush();
+                    Connection.getOutputStream(connection)?.Flush();
                 }
                 catch (java.io.IOException ex)
                 {
-                    if (!Connection.isDisconnected(netManager))
+                    if (!Connection.isDisconnected(connection))
                     {
-                        Connection.disconnect(this.netManager, ex);
+                        Connection.disconnect(connection, ex);
                         ex.printStackTrace();
                     }
                 }
             }
             finally
             {
-
             }
         }
     }

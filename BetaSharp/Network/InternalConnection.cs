@@ -25,11 +25,11 @@ public class InternalConnection : Connection
 
     public override void sendPacket(Packet packet)
     {
-        if (!IsClosed)
+        if (!IsDisconnected)
         {
             packet.ProcessForInternal();
 
-            if (RemoteConnection != null && !RemoteConnection.IsClosed)
+            if (RemoteConnection != null && !RemoteConnection.IsDisconnected)
             {
                 RemoteConnection.ReceivePacket(packet);
             }
@@ -79,16 +79,15 @@ public class InternalConnection : Connection
 
     public override void disconnect(string disconnectedReason, params object[] disconnectReasonArgs)
     {
-        if (IsOpen)
+        if (!IsDisconnected)
         {
-            IsOpen = false;
             IsDisconnected = true;
             this.DisconnectedReason = disconnectedReason;
             this.DisconnectReasonArgs = disconnectReasonArgs;
 
             _logger.LogInformation($"[{Name}] Disconnected: {disconnectedReason}");
 
-            if (RemoteConnection != null && RemoteConnection.IsOpen)
+            if (RemoteConnection != null && !RemoteConnection.IsDisconnected)
             {
                 RemoteConnection.OnRemoteDisconnect(disconnectedReason, disconnectReasonArgs);
             }
@@ -97,9 +96,8 @@ public class InternalConnection : Connection
 
     public void OnRemoteDisconnect(string reason, object[] args)
     {
-        if (IsOpen)
+        if (!IsDisconnected)
         {
-            IsOpen = false;
             IsDisconnected = true;
             DisconnectedReason = reason;
             DisconnectReasonArgs = args;

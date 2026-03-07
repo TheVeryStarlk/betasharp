@@ -5,7 +5,6 @@ namespace BetaSharp.Threading;
 
 internal class ThreadCloseConnection
 {
-
     private readonly ILogger<ThreadCloseConnection> _logger = Log.Instance.For<ThreadCloseConnection>();
     public readonly Connection Connection;
 
@@ -22,7 +21,7 @@ internal class ThreadCloseConnection
             {
                 await Task.Delay(2000);
 
-                if (Connection.isOpen(Connection))
+                if (!Connection.IsDisconnected)
                 {
                     Connection.getWriter(Connection).interrupt();
                     Connection.disconnect(Connection, new Exception("disconnect.closed"));
