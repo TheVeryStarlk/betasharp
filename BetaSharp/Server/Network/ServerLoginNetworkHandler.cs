@@ -30,7 +30,7 @@ public class ServerLoginNetworkHandler : NetHandler
     {
         this.server = server;
         connection = new Connection(socket, name, this);
-        connection.lag = 0;
+        connection.Lag = 0;
     }
 
     public ServerLoginNetworkHandler(BetaSharpServer server, Connection connection)
@@ -38,7 +38,7 @@ public class ServerLoginNetworkHandler : NetHandler
         this.server = server;
         this.connection = connection;
         connection.setNetworkHandler(this);
-        connection.lag = 0;
+        connection.Lag = 0;
     }
 
     public void tick()
@@ -95,7 +95,7 @@ public class ServerLoginNetworkHandler : NetHandler
         }
         if (packet.worldSeed == LoginHelloPacket.BETASHARP_CLIENT_SIGNATURE)
         {
-            connection.betaSharpClient = true;
+            connection.BetaSharpClient = true;
         }
 
         username = packet.username;

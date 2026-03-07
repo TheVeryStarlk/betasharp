@@ -14,7 +14,7 @@ public class InternalConnection : Connection
 
     public InternalConnection(NetHandler? networkHandler, string name)
     {
-        this.networkHandler = networkHandler;
+        this.NetworkHandler = networkHandler;
         Name = name;
     }
 
@@ -25,11 +25,11 @@ public class InternalConnection : Connection
 
     public override void sendPacket(Packet packet)
     {
-        if (!closed)
+        if (!IsClosed)
         {
             packet.ProcessForInternal();
 
-            if (RemoteConnection != null && !RemoteConnection.closed)
+            if (RemoteConnection != null && !RemoteConnection.IsClosed)
             {
                 RemoteConnection.ReceivePacket(packet);
             }
@@ -38,21 +38,21 @@ public class InternalConnection : Connection
 
     protected void ReceivePacket(Packet packet)
     {
-        readQueue.add(packet);
+        ReadQueue.add(packet);
     }
 
     protected override void processPackets()
     {
-        if (networkHandler == null)
+        if (NetworkHandler == null)
         {
             throw new Exception($"InternalConnection is not initialized");
         }
 
         int count = 0;
-        while (!readQueue.isEmpty())
+        while (!ReadQueue.isEmpty())
         {
-            Packet packet = (Packet)readQueue.remove(0);
-            packet.Apply(networkHandler);
+            Packet packet = (Packet)ReadQueue.remove(0);
+            packet.Apply(NetworkHandler);
             packet.Return();
             count++;
         }
@@ -74,16 +74,16 @@ public class InternalConnection : Connection
 
     public override void disconnect(string disconnectedReason, params object[] disconnectReasonArgs)
     {
-        if (open)
+        if (IsOpen)
         {
-            open = false;
-            disconnected = true;
-            this.disconnectedReason = disconnectedReason;
-            this.disconnectReasonArgs = disconnectReasonArgs;
+            IsOpen = false;
+            IsDisconnected = true;
+            this.DisconnectedReason = disconnectedReason;
+            this.DisconnectReasonArgs = disconnectReasonArgs;
 
             _logger.LogInformation($"[{Name}] Disconnected: {disconnectedReason}");
 
-            if (RemoteConnection != null && RemoteConnection.open)
+            if (RemoteConnection != null && RemoteConnection.IsOpen)
             {
                 RemoteConnection.OnRemoteDisconnect(disconnectedReason, disconnectReasonArgs);
             }
@@ -92,12 +92,12 @@ public class InternalConnection : Connection
 
     public void OnRemoteDisconnect(string reason, object[] args)
     {
-        if (open)
+        if (IsOpen)
         {
-            open = false;
-            disconnected = true;
-            disconnectedReason = reason;
-            disconnectReasonArgs = args;
+            IsOpen = false;
+            IsDisconnected = true;
+            DisconnectedReason = reason;
+            DisconnectReasonArgs = args;
             _logger.LogInformation($"[{Name}] Remote disconnected: {reason}");
         }
     }
@@ -114,9 +114,9 @@ public class InternalConnection : Connection
     public override void tick()
     {
         processPackets();
-        if (disconnected && readQueue.isEmpty())
+        if (IsDisconnected && ReadQueue.isEmpty())
         {
-            networkHandler?.onDisconnected(disconnectedReason, disconnectReasonArgs);
+            NetworkHandler?.onDisconnected(DisconnectedReason, DisconnectReasonArgs);
         }
     }
 
