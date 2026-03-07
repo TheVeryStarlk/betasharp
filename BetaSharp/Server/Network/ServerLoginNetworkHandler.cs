@@ -162,7 +162,7 @@ public class ServerLoginNetworkHandler : NetworkHandler
 
     public string getConnectionInfo()
     {
-        var endPoint = connection.getAddress();
+        var endPoint = connection.Address;
 
         if (endPoint == null) return "Internal";
 

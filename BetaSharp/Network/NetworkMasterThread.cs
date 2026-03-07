@@ -2,43 +2,40 @@ using java.lang;
 
 namespace BetaSharp.Network;
 
-internal class NetworkMasterThread : java.lang.Thread
+internal class NetworkMasterThread(Connection connection) : java.lang.Thread
 {
-    public readonly Connection netManager;
-
-    public NetworkMasterThread(Connection var1)
-    {
-        netManager = var1;
-    }
-
 
     public override void run()
     {
         try
         {
             sleep(5000L);
-            if (Connection.getReader(this.netManager).isAlive())
+
+            if (connection.Reader.isAlive())
             {
                 try
                 {
-                    Connection.getReader(this.netManager).stop();
+                    connection.Reader.stop();
                 }
-                catch (Throwable) { }
+                catch
+                {
+                }
             }
 
-            if (Connection.getWriter(this.netManager).isAlive())
+            if (connection.Writer.isAlive())
             {
                 try
                 {
-                    Connection.getWriter(this.netManager).stop();
+                    connection.Writer.stop();
                 }
-                catch (Throwable) { }
+                catch
+                {
+                }
             }
         }
         catch (InterruptedException ex)
         {
             ex.printStackTrace();
         }
-
     }
 }

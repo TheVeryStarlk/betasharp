@@ -14,7 +14,7 @@ class NetworkReaderThread(Connection connection, string name) : java.lang.Thread
                     break;
                 }
 
-                while (Connection.readPacket(connection))
+                while (connection.read())
                 {
                 }
 

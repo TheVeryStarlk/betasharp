@@ -23,8 +23,8 @@ internal class ThreadCloseConnection
 
                 if (!Connection.IsDisconnected)
                 {
-                    Connection.getWriter(Connection).interrupt();
-                    Connection.disconnect(Connection, new Exception("disconnect.closed"));
+                    Connection.Writer.interrupt();
+                    Connection.disconnect(new Exception("disconnect.closed"));
                 }
             }
             catch (Exception ex)

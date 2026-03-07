@@ -67,29 +67,30 @@ public class InternalConnection : Connection
         }
     }
 
-    protected override bool write()
+    public override bool write()
     {
         return false;
     }
 
-    protected override bool read()
+    public override bool read()
     {
         return false;
     }
 
-    public override void disconnect(string disconnectedReason, params object[] disconnectReasonArgs)
+    public override void disconnect(string disconnectedReason, params object[] disconnectedReasonArgs)
     {
         if (!IsDisconnected)
         {
             IsDisconnected = true;
-            this.DisconnectedReason = disconnectedReason;
-            this.DisconnectReasonArguments = disconnectReasonArgs;
+
+            DisconnectedReason = disconnectedReason;
+            DisconnectedReasonArgs = disconnectedReasonArgs;
 
             _logger.LogInformation($"[{Name}] Disconnected: {disconnectedReason}");
 
             if (RemoteConnection != null && !RemoteConnection.IsDisconnected)
             {
-                RemoteConnection.OnRemoteDisconnect(disconnectedReason, disconnectReasonArgs);
+                RemoteConnection.OnRemoteDisconnect(disconnectedReason, disconnectedReasonArgs);
             }
         }
     }
@@ -100,7 +101,7 @@ public class InternalConnection : Connection
         {
             IsDisconnected = true;
             DisconnectedReason = reason;
-            DisconnectReasonArguments = args;
+            DisconnectedReasonArgs = args;
             _logger.LogInformation($"[{Name}] Remote disconnected: {reason}");
         }
     }
@@ -119,12 +120,9 @@ public class InternalConnection : Connection
         processPackets();
         if (IsDisconnected && ReadQueue.IsEmpty)
         {
-            NetworkHandler?.onDisconnected(DisconnectedReason, DisconnectReasonArguments);
+            NetworkHandler?.onDisconnected(DisconnectedReason, DisconnectedReasonArgs);
         }
     }
 
-    public override IPEndPoint getAddress()
-    {
-        return new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12345);
-    }
+    public override IPEndPoint? Address { get; } = new (IPAddress.Parse("127.0.0.1"), 12345);
 }

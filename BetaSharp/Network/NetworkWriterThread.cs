@@ -13,7 +13,7 @@ internal class NetworkWriterThread(Connection connection, string name) : java.la
                     break;
                 }
 
-                while (Connection.writePacket(connection))
+                while (connection.write())
                 {
                 }
 
@@ -21,14 +21,14 @@ internal class NetworkWriterThread(Connection connection, string name) : java.la
 
                 try
                 {
-                    Connection.getOutputStream(connection)?.Flush();
+                    connection.NetworkStream.Flush();
                 }
-                catch (java.io.IOException ex)
+                catch (java.io.IOException exception)
                 {
-                    if (!Connection.isDisconnected(connection))
+                    if (!connection.IsDisconnected)
                     {
-                        Connection.disconnect(connection, ex);
-                        ex.printStackTrace();
+                        connection.disconnect(exception);
+                        exception.printStackTrace();
                     }
                 }
             }

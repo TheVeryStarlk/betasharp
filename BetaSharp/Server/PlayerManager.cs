@@ -114,7 +114,7 @@ public class PlayerManager
         else
         {
             // TODO: This does not work with IPEndpoint's ToString
-            string var3 = loginNetworkHandler.connection.getAddress().ToString();
+            string var3 = loginNetworkHandler.connection.Address.ToString();
             var3 = var3.Substring(var3.IndexOf("/") + 1);
             var3 = var3.Substring(0, var3.IndexOf(":"));
             if (bannedIps.Contains(var3))
@@ -219,7 +219,7 @@ public class PlayerManager
         }
 
         // Remove from source chunk map NOW, while player.x/z are still in
-        // source-dimension space. 
+        // source-dimension space.
         GetChunkMap(sourceDim).removePlayer(player);
 
         player.dimensionId = targetDim;
@@ -261,7 +261,7 @@ public class PlayerManager
             targetWorld.chunkCache.forceLoad = false;
 
             // Fully drain lighting updates generated during portal chunk
-            // creation before the chunks are queued for the client. 
+            // creation before the chunks are queued for the client.
             while (targetWorld.doLightingUpdates()) { }
         }
 
