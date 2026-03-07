@@ -17,7 +17,7 @@ public class Connection
     public int Lag { get; set; }
 
     protected bool IsOpen { get; set; } = true;
-    protected ConcurrentQueue<Packet> ReadQueue { get; } = new();
+    protected ConcurrentQueue<Packet> ReadQueue { get; } = [];
     protected NetHandler? NetworkHandler { get; set; }
     protected bool IsClosed { get; set; }
     protected bool IsDisconnected { get; set; }
@@ -26,8 +26,8 @@ public class Connection
 
     private readonly object _lock = new();
     private Socket? _socket;
-    private readonly List _sendQueue = Collections.synchronizedList(new ArrayList());
-    private readonly List _delayedSendQueue = Collections.synchronizedList(new ArrayList());
+    private readonly ConcurrentQueue<Packet> _sendQueue = [];
+    private readonly ConcurrentQueue<Packet> _delayedSendQueue = [];
     private int _timeout;
     private int _delay;
     private int _sendQueueSize;
@@ -78,11 +78,11 @@ public class Connection
                 _sendQueueSize += packet.Size() + 1;
                 if (Packet.Registry[packet.Id]!.WorldPacket)
                 {
-                    _delayedSendQueue.add(packet);
+                    _delayedSendQueue.Enqueue(packet);
                 }
                 else
                 {
-                    _sendQueue.add(packet);
+                    _sendQueue.Enqueue(packet);
                 }
             }
         }
@@ -100,15 +100,19 @@ public class Connection
         try
         {
             int[] sizeStats;
-            Packet packet;
+            Packet? packet;
             object lockObj;
-            if (!_sendQueue.isEmpty() && (Lag == 0 || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-                    - ((Packet)_sendQueue.get(0)).CreationTime >= Lag))
+
+            if (!_sendQueue.IsEmpty /* && (Lag == 0 || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - ((Packet)_sendQueue.get(0)).CreationTime >= Lag) */)
             {
                 lockObj = _lock;
                 lock (lockObj)
                 {
-                    packet = (Packet)_sendQueue.remove(0);
+                    if (!_sendQueue.TryDequeue(out packet))
+                    {
+                        return false;
+                    }
+
                     _sendQueueSize -= packet.Size() + 1;
                 }
 
@@ -119,13 +123,16 @@ public class Connection
                 packet.Return();
             }
 
-            if (_delay-- <= 0 && !_delayedSendQueue.isEmpty() && (Lag == 0 || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-                    - ((Packet)_delayedSendQueue.get(0)).CreationTime >= Lag))
+            if (_delay-- <= 0 && !_delayedSendQueue.IsEmpty /* && (Lag == 0 || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - ((Packet)_delayedSendQueue.get(0)).CreationTime >= Lag) */ )
             {
                 lockObj = _lock;
                 lock (lockObj)
                 {
-                    packet = (Packet)_delayedSendQueue.remove(0);
+                    if (!_delayedSendQueue.TryDequeue(out packet))
+                    {
+                        return false;
+                    }
+
                     _sendQueueSize -= packet.Size() + 1;
                 }
 
@@ -293,7 +300,7 @@ public class Connection
 
     public int getDelayedSendQueueSize()
     {
-        return _delayedSendQueue.size();
+        return _delayedSendQueue.Count;
     }
 
     public static bool isOpen(Connection conn)
