@@ -21,7 +21,7 @@ public class Connection
     protected ConcurrentQueue<Packet> ReadQueue { get; } = [];
     protected NetworkHandler? NetworkHandler { get; set; }
     protected string DisconnectedReason { get; set; } = string.Empty;
-    protected object[]? DisconnectedReasonArgs { get; set; }
+    protected Exception? DisconnectedException { get; set; }
 
     private Socket? _socket;
     private readonly ConcurrentQueue<Packet> _sendQueue = [];
@@ -176,10 +176,10 @@ public class Connection
     public void disconnect(Exception exception)
     {
         _logger.LogError(exception, "An exception has occured and connection had to be terminated");
-        disconnect("disconnect.genericReason", $"Internal exception: {exception}");
+        disconnect("disconnect.genericReason", exception);
     }
 
-    public virtual void disconnect(string disconnectedReason, params object[] disconnectedReasonArgs)
+    public virtual void disconnect(string disconnectedReason, Exception? disconnectedException = null)
     {
         if (IsDisconnected)
         {
@@ -189,7 +189,7 @@ public class Connection
         IsDisconnected = true;
 
         DisconnectedReason = disconnectedReason;
-        DisconnectedReasonArgs = disconnectedReasonArgs;
+        DisconnectedException = disconnectedException;
 
         new NetworkMasterThread(this).start();
 
@@ -228,7 +228,7 @@ public class Connection
 
         if (IsDisconnected && ReadQueue.IsEmpty)
         {
-            NetworkHandler?.onDisconnected(DisconnectedReason, DisconnectedReasonArgs);
+            NetworkHandler?.onDisconnected(DisconnectedReason, DisconnectedException);
         }
     }
 

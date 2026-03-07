@@ -17,7 +17,7 @@ public abstract class NetworkHandler
     {
     }
 
-    public virtual void onDisconnected(string reason, object[]? parameters)
+    public virtual void onDisconnected(string reason, Exception? exception)
     {
     }
 

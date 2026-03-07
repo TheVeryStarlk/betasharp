@@ -431,7 +431,7 @@ public class ServerPlayNetworkHandler : NetworkHandler, CommandOutput
         var2.bypassSpawnProtection = false;
     }
 
-    public override void onDisconnected(string reason, object[]? parameters)
+    public override void onDisconnected(string reason, Exception? exception)
     {
         _logger.LogInformation($"{player.name} lost connection: {reason}");
         server.playerManager.disconnect(player);

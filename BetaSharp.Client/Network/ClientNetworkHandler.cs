@@ -411,13 +411,13 @@ public class ClientNetworkHandler : NetworkHandler
         _game.displayGuiScreen(new GuiConnectFailed("disconnect.disconnected", "disconnect.genericReason", packet.reason));
     }
 
-    public override void onDisconnected(string reason, object[]? parameters)
+    public override void onDisconnected(string reason, Exception? exception)
     {
         if (!disconnected)
         {
             disconnected = true;
             _game.changeWorld(null);
-            _game.displayGuiScreen(new GuiConnectFailed("disconnect.lost", reason, parameters));
+            _game.displayGuiScreen(new GuiConnectFailed("disconnect.lost", reason, exception?.Message ?? string.Empty));
         }
     }
 
@@ -520,13 +520,13 @@ public class ClientNetworkHandler : NetworkHandler
                 }
                 else
                 {
-                    netManager.disconnect("disconnect.loginFailedInfo", response);
+                    netManager.disconnect("disconnect.loginFailedInfo");
                 }
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                _logger.LogError(e, e.Message);
-                netManager.disconnect("disconnect.genericReason", "Internal client error: " + e.Message);
+                _logger.LogError(exception, exception.Message);
+                netManager.disconnect("disconnect.genericReason", exception);
             }
         }
     }

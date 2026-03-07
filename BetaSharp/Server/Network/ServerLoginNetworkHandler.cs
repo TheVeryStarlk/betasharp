@@ -149,7 +149,7 @@ public class ServerLoginNetworkHandler : NetworkHandler
         closed = true;
     }
 
-    public override void onDisconnected(string reason, object[]? parameters)
+    public override void onDisconnected(string reason, Exception? exception)
     {
         _logger.LogInformation($"{getConnectionInfo()} lost connection");
         closed = true;

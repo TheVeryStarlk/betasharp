@@ -77,31 +77,31 @@ public class InternalConnection : Connection
         return false;
     }
 
-    public override void disconnect(string disconnectedReason, params object[] disconnectedReasonArgs)
+    public override void disconnect(string disconnectedReason, Exception? disconnectedException = null)
     {
         if (!IsDisconnected)
         {
             IsDisconnected = true;
 
             DisconnectedReason = disconnectedReason;
-            DisconnectedReasonArgs = disconnectedReasonArgs;
+            DisconnectedException = disconnectedException;
 
             _logger.LogInformation($"[{Name}] Disconnected: {disconnectedReason}");
 
             if (RemoteConnection != null && !RemoteConnection.IsDisconnected)
             {
-                RemoteConnection.OnRemoteDisconnect(disconnectedReason, disconnectedReasonArgs);
+                RemoteConnection.OnRemoteDisconnect(disconnectedReason, disconnectedException);
             }
         }
     }
 
-    public void OnRemoteDisconnect(string reason, object[] args)
+    public void OnRemoteDisconnect(string reason, Exception? disconnectedException)
     {
         if (!IsDisconnected)
         {
             IsDisconnected = true;
             DisconnectedReason = reason;
-            DisconnectedReasonArgs = args;
+            DisconnectedException = disconnectedException;
             _logger.LogInformation($"[{Name}] Remote disconnected: {reason}");
         }
     }
@@ -120,7 +120,7 @@ public class InternalConnection : Connection
         processPackets();
         if (IsDisconnected && ReadQueue.IsEmpty)
         {
-            NetworkHandler?.onDisconnected(DisconnectedReason, DisconnectedReasonArgs);
+            NetworkHandler?.onDisconnected(DisconnectedReason, DisconnectedException);
         }
     }
 
