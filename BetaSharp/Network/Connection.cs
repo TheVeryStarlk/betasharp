@@ -9,9 +9,6 @@ namespace BetaSharp.Network;
 
 public class Connection
 {
-    private static readonly int[] s_totalReadSize = new int[256];
-    private static readonly int[] s_totalSendSize = new int[256];
-
     public bool BetaSharpClient { get; set; }
 
     protected bool IsOpen { get; set; } = true;
@@ -115,8 +112,7 @@ public class Connection
                 }
 
                 Packet.Write(packet, _networkStream);
-                sizeStats = s_totalSendSize;
-                sizeStats[packet.Id] += packet.Size() + 1;
+
                 wrotePacket = true;
                 packet.Return();
             }
@@ -135,8 +131,7 @@ public class Connection
                 }
 
                 Packet.Write(packet, _networkStream);
-                sizeStats = s_totalSendSize;
-                sizeStats[packet.Id] += packet.Size() + 1;
+
                 _delay = 0;
                 wrotePacket = true;
                 packet.Return();
@@ -180,9 +175,6 @@ public class Connection
             Packet? packet = Packet.Read(_networkStream, NetworkHandler.isServerSide());
             if (packet != null)
             {
-                int[] sizeStats = s_totalReadSize;
-                int packetId = packet.Id;
-                sizeStats[packetId] += packet.Size() + 1;
                 ReadQueue.Enqueue(packet);
                 receivedPacket = true;
             }
