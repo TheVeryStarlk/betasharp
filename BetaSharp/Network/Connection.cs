@@ -123,7 +123,6 @@ public class Connection
         }
     }
 
-
     public virtual bool read()
     {
         ArgumentNullException.ThrowIfNull(NetworkStream);
@@ -155,35 +154,6 @@ public class Connection
             }
 
             return false;
-        }
-    }
-
-    public void disconnect(Exception exception)
-    {
-        _logger.LogError(exception, "An exception has occured and connection had to be terminated");
-        disconnect("disconnect.genericReason", exception);
-    }
-
-    public virtual void disconnect(string disconnectedReason, Exception? disconnectedException = null)
-    {
-        if (IsDisconnected)
-        {
-            return;
-        }
-
-        IsDisconnected = true;
-
-        DisconnectedReason = disconnectedReason;
-        DisconnectedException = disconnectedException;
-
-        try
-        {
-            NetworkStream?.Close();
-            _socket?.Close();
-        }
-        catch (Exception)
-        {
-            // Ignore.
         }
     }
 
@@ -235,5 +205,34 @@ public class Connection
     public virtual void disconnect()
     {
         new ThreadCloseConnection(this).Start();
+    }
+
+    public void disconnect(Exception exception)
+    {
+        _logger.LogError(exception, "An exception has occurred and connection had to be terminated");
+        disconnect("disconnect.genericReason", exception);
+    }
+
+    public virtual void disconnect(string disconnectedReason, Exception? disconnectedException = null)
+    {
+        if (IsDisconnected)
+        {
+            return;
+        }
+
+        IsDisconnected = true;
+
+        DisconnectedReason = disconnectedReason;
+        DisconnectedException = disconnectedException;
+
+        try
+        {
+            NetworkStream?.Close();
+            _socket?.Close();
+        }
+        catch (Exception)
+        {
+            // Ignore.
+        }
     }
 }
