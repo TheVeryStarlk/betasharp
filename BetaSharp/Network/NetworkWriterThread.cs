@@ -12,22 +12,12 @@ internal class NetworkWriterThread : java.lang.Thread
 
     public override void run()
     {
-        object var1 = Connection.LOCK;
-        lock (var1)
-        {
-            ++Connection.WRITE_THREAD_COUNTER;
-        }
-
         while (true)
         {
-            bool var13 = false;
-
             try
             {
-                var13 = true;
                 if (!Connection.isOpen(netManager))
                 {
-                    var13 = false;
                     break;
                 }
 
@@ -52,21 +42,8 @@ internal class NetworkWriterThread : java.lang.Thread
             }
             finally
             {
-                if (var13)
-                {
-                    object var5 = Connection.LOCK;
-                    lock (var5)
-                    {
-                        --Connection.WRITE_THREAD_COUNTER;
-                    }
-                }
-            }
-        }
 
-        var1 = Connection.LOCK;
-        lock (var1)
-        {
-            --Connection.WRITE_THREAD_COUNTER;
+            }
         }
     }
 }
