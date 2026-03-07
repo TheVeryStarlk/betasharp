@@ -62,7 +62,7 @@ public class ClientNetworkHandler : NetworkHandler
     {
         this._game = game;
         netManager = connection;
-        netManager.setNetworkHandler(this);
+        netManager.NetworkHandler = this;
     }
 
     public void tick()

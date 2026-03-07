@@ -36,7 +36,7 @@ public class ServerLoginNetworkHandler : NetworkHandler
     {
         this.server = server;
         this.connection = connection;
-        connection.setNetworkHandler(this);
+        connection.NetworkHandler = this;
     }
 
     public void tick()

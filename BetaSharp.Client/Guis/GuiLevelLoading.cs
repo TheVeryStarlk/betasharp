@@ -48,7 +48,7 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
                 _logger.LogInformation("[Internal-Client] Created internal connection");
 
                 ClientNetworkHandler clientHandler = new(Game, clientConnection);
-                clientConnection.setNetworkHandler(clientHandler);
+                clientConnection.NetworkHandler = clientHandler;
                 clientHandler.addToSendQueue(new global::BetaSharp.Network.Packets.HandshakePacket(Game.session.username));
 
                 Game.displayGuiScreen(new GuiConnecting(Game, clientHandler));

@@ -17,9 +17,9 @@ public class Connection
 
     public bool BetaSharpClient { get; set; }
     public bool IsDisconnected { get; set; }
+    public NetworkHandler? NetworkHandler { get; set; }
 
     protected ConcurrentQueue<Packet> ReadQueue { get; } = [];
-    protected NetworkHandler? NetworkHandler { get; set; }
     protected string DisconnectedReason { get; set; } = string.Empty;
     protected Exception? DisconnectedException { get; set; }
 
@@ -53,11 +53,6 @@ public class Connection
     protected Connection()
     {
         Address = null;
-    }
-
-    public void setNetworkHandler(NetworkHandler networkHandler)
-    {
-        NetworkHandler = networkHandler;
     }
 
     public virtual void sendPacket(Packet packet)

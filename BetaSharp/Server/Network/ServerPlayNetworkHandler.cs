@@ -40,7 +40,7 @@ public class ServerPlayNetworkHandler : NetworkHandler, CommandOutput
     {
         this.server = server;
         this.connection = connection;
-        connection.setNetworkHandler(this);
+        connection.NetworkHandler = this;
         this.player = player;
         player.networkHandler = this;
     }
