@@ -561,7 +561,7 @@ public class ServerPlayNetworkHandler : NetworkHandler, CommandOutput
 
     public int getBlockDataSendQueueSize()
     {
-        return connection.getDelayedSendQueueSize();
+        return connection.DelayedSendQueueLength;
     }
 
     public void SendMessage(string message)

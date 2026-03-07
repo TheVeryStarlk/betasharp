@@ -10,6 +10,8 @@ namespace BetaSharp.Network;
 
 public class Connection
 {
+    public int DelayedSendQueueLength => _delayedSendQueue.Count;
+
     public virtual IPEndPoint? Address { get; }
     public Thread? Reader { get; }
     public Thread? Writer { get; }
@@ -23,12 +25,12 @@ public class Connection
     protected string DisconnectedReason { get; set; } = string.Empty;
     protected Exception? DisconnectedException { get; set; }
 
-    private Socket? _socket;
-    private readonly ConcurrentQueue<Packet> _sendQueue = [];
-    private readonly ConcurrentQueue<Packet> _delayedSendQueue = [];
     private int _timeout;
     private int _delay;
 
+    private readonly Socket? _socket;
+    private readonly ConcurrentQueue<Packet> _sendQueue = [];
+    private readonly ConcurrentQueue<Packet> _delayedSendQueue = [];
     private readonly ILogger<Connection> _logger = Log.Instance.For<Connection>();
     private readonly ManualResetEventSlim _wakeSignal = new(false);
 
@@ -52,7 +54,6 @@ public class Connection
 
     protected Connection()
     {
-        Address = null;
     }
 
     public virtual void sendPacket(Packet packet)
@@ -249,10 +250,5 @@ public class Connection
     {
         interrupt();
         new ThreadCloseConnection(this).Start();
-    }
-
-    public int getDelayedSendQueueSize()
-    {
-        return _delayedSendQueue.Count;
     }
 }
