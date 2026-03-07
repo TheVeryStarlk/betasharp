@@ -187,8 +187,6 @@ public class Connection
         DisconnectedReason = disconnectedReason;
         DisconnectedException = disconnectedException;
 
-        new NetworkMasterThread(this).start();
-
         try
         {
             NetworkStream?.Close();
