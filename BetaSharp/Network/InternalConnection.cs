@@ -73,11 +73,6 @@ public class InternalConnection : Connection
         return false;
     }
 
-    public override bool read()
-    {
-        return false;
-    }
-
     public override void disconnect(string reason, Exception? exception = null)
     {
         if (!IsDisconnected)

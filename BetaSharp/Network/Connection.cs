@@ -12,7 +12,6 @@ public class Connection
     public int DelayedSendQueueLength => _delayedSendQueue.Count;
 
     public virtual IPEndPoint? Address { get; }
-    public Thread? Reader { get; }
     public Thread? Writer { get; }
     public NetworkStream? NetworkStream { get; }
 
@@ -37,17 +36,15 @@ public class Connection
         _socket = socket;
 
         Address = (IPEndPoint?)socket.RemoteEndPoint;
+        NetworkStream = new NetworkStream(socket);
         NetworkHandler = networkHandler;
 
         socket.ReceiveTimeout = 30000;
 
-        NetworkStream = new NetworkStream(socket);
-
-        Reader = new NetworkReaderThread(this, address + " read thread");
         Writer = new NetworkWriterThread(this, address + " write thread");
-
-        Reader.start();
         Writer.start();
+
+        Task.Factory.StartNew(read, TaskCreationOptions.LongRunning);
     }
 
     protected Connection()
@@ -68,6 +65,37 @@ public class Connection
         else
         {
             _sendQueue.Enqueue(packet);
+        }
+    }
+
+    private void read()
+    {
+        while (!IsDisconnected)
+        {
+            ArgumentNullException.ThrowIfNull(NetworkStream);
+            ArgumentNullException.ThrowIfNull(NetworkHandler);
+
+            try
+            {
+                Packet? packet = Packet.Read(NetworkStream, NetworkHandler.isServerSide());
+
+                if (packet is not null)
+                {
+                    ReadQueue.Enqueue(packet);
+                }
+                else
+                {
+                    disconnect("disconnect.endOfStream");
+                    break;
+                }
+
+                Task.Delay(10);
+            }
+            catch (Exception exception)
+            {
+                disconnect(exception: exception);
+                break;
+            }
         }
     }
 
@@ -110,40 +138,6 @@ public class Connection
             }
 
             return wrote;
-        }
-        catch (Exception exception)
-        {
-            if (!IsDisconnected)
-            {
-                disconnect(exception: exception);
-            }
-
-            return false;
-        }
-    }
-
-    public virtual bool read()
-    {
-        ArgumentNullException.ThrowIfNull(NetworkStream);
-        ArgumentNullException.ThrowIfNull(NetworkHandler);
-
-        bool received = false;
-
-        try
-        {
-            Packet? packet = Packet.Read(NetworkStream, NetworkHandler.isServerSide());
-
-            if (packet is not null)
-            {
-                ReadQueue.Enqueue(packet);
-                received = true;
-            }
-            else
-            {
-                disconnect("disconnect.endOfStream");
-            }
-
-            return received;
         }
         catch (Exception exception)
         {
