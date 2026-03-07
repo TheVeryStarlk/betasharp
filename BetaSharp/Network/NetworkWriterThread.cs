@@ -17,7 +17,7 @@ internal class NetworkWriterThread(Connection connection, string name) : java.la
                 {
                 }
 
-                connection.waitForSignal(10);
+                // connection.waitForSignal(10);
 
                 try
                 {

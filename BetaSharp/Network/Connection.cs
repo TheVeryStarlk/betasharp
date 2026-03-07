@@ -32,7 +32,6 @@ public class Connection
     private readonly ConcurrentQueue<Packet> _sendQueue = [];
     private readonly ConcurrentQueue<Packet> _delayedSendQueue = [];
     private readonly ILogger<Connection> _logger = Log.Instance.For<Connection>();
-    private readonly ManualResetEventSlim _wakeSignal = new(false);
 
     public Connection(Socket socket, string address, NetworkHandler networkHandler)
     {
@@ -124,16 +123,6 @@ public class Connection
         }
     }
 
-    public virtual void interrupt()
-    {
-        _wakeSignal.Set();
-    }
-
-    public void waitForSignal(int timeoutMs)
-    {
-        _wakeSignal.Wait(timeoutMs);
-        _wakeSignal.Reset();
-    }
 
     public virtual bool read()
     {
@@ -218,7 +207,6 @@ public class Connection
         }
 
         processPackets();
-        interrupt();
 
         if (IsDisconnected && ReadQueue.IsEmpty)
         {
@@ -246,7 +234,6 @@ public class Connection
 
     public virtual void disconnect()
     {
-        interrupt();
         new ThreadCloseConnection(this).Start();
     }
 }

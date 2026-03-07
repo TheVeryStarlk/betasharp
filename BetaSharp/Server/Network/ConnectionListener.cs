@@ -99,21 +99,19 @@ public class ConnectionListener
                 ServerLoginNetworkHandler connection = _pendingConnections[i];
 
                 try
-            {
-                connection.tick();
-            }
-            catch (Exception ex)
-            {
-                connection.disconnect("Internal server error");
-                _logger.LogError($"Failed to handle packet: {ex}");
-            }
+                {
+                    connection.tick();
+                }
+                catch (Exception ex)
+                {
+                    connection.disconnect("Internal server error");
+                    _logger.LogError($"Failed to handle packet: {ex}");
+                }
 
-            if (connection.closed)
-            {
-                _pendingConnections.RemoveAt(i--);
-            }
-
-                connection.connection.interrupt();
+                if (connection.closed)
+                {
+                    _pendingConnections.RemoveAt(i--);
+                }
             }
         }
 
@@ -123,22 +121,22 @@ public class ConnectionListener
             {
                 ServerPlayNetworkHandler connection = _connections[i];
 
-            try
-            {
-                connection.tick();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Failed to handle packet: {ex}");
-                connection.disconnect("Internal server error");
-            }
+                try
+                {
+                    connection.tick();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Failed to handle packet: {ex}");
+                    connection.disconnect("Internal server error");
+                }
 
-            if (connection.disconnected)
-            {
-                _connections.RemoveAt(i--);
-            }
+                if (connection.disconnected)
+                {
+                    _connections.RemoveAt(i--);
+                }
 
-            connection.connection.interrupt();
+                // connection.connection.interrupt();
             }
         }
     }

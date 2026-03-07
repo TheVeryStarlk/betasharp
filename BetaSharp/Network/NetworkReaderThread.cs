@@ -18,7 +18,7 @@ class NetworkReaderThread(Connection connection, string name) : java.lang.Thread
                 {
                 }
 
-                connection.waitForSignal(10);
+                // connection.waitForSignal(10);
             }
             finally
             {

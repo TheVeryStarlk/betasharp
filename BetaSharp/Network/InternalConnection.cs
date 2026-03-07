@@ -111,10 +111,6 @@ public class InternalConnection : Connection
         disconnect("Disconnecting");
     }
 
-    public override void interrupt()
-    {
-    }
-
     public override void tick()
     {
         processPackets();
