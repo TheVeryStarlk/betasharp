@@ -12,7 +12,6 @@ public class Connection
     public int DelayedSendQueueLength => _delayedSendQueue.Count;
 
     public virtual IPEndPoint? Address { get; }
-    public Thread? Writer { get; }
     public NetworkStream? NetworkStream { get; }
 
     public bool BetaSharpClient { get; set; }
@@ -41,10 +40,8 @@ public class Connection
 
         socket.ReceiveTimeout = 30000;
 
-        Writer = new NetworkWriterThread(this, address + " write thread");
-        Writer.start();
-
         Task.Factory.StartNew(read, TaskCreationOptions.LongRunning);
+        Task.Factory.StartNew(write, TaskCreationOptions.LongRunning);
     }
 
     protected Connection()
@@ -72,11 +69,11 @@ public class Connection
     {
         while (!IsDisconnected)
         {
-            ArgumentNullException.ThrowIfNull(NetworkStream);
-            ArgumentNullException.ThrowIfNull(NetworkHandler);
-
             try
             {
+                ArgumentNullException.ThrowIfNull(NetworkStream);
+                ArgumentNullException.ThrowIfNull(NetworkHandler);
+
                 Packet? packet = Packet.Read(NetworkStream, NetworkHandler.isServerSide());
 
                 if (packet is not null)
@@ -99,54 +96,51 @@ public class Connection
         }
     }
 
-    public virtual bool write()
+    private void write()
     {
-        ArgumentNullException.ThrowIfNull(NetworkStream);
-
-        bool wrote = false;
-
-        try
+        while (!IsDisconnected)
         {
-            Packet? packet;
-
-            if (!_sendQueue.IsEmpty)
+            try
             {
-                if (!_sendQueue.TryDequeue(out packet))
+                ArgumentNullException.ThrowIfNull(NetworkStream);
+
+                Packet? packet;
+
+                if (!_sendQueue.IsEmpty)
                 {
-                    return false;
+                    if (!_sendQueue.TryDequeue(out packet))
+                    {
+                        continue;
+                    }
+
+                    Packet.Write(packet, NetworkStream);
+                    packet.Return();
                 }
 
-                Packet.Write(packet, NetworkStream);
-
-                wrote = true;
-                packet.Return();
-            }
-
-            if (!_delayedSendQueue.IsEmpty && _delay-- <= 0)
-            {
-                if (!_delayedSendQueue.TryDequeue(out packet))
+                if (!_delayedSendQueue.IsEmpty && _delay-- <= 0)
                 {
-                    return false;
+                    if (!_delayedSendQueue.TryDequeue(out packet))
+                    {
+                        continue;
+                    }
+
+                    _delay = 0;
+
+                    Packet.Write(packet, NetworkStream);
+                    packet.Return();
                 }
 
-                Packet.Write(packet, NetworkStream);
-
-                _delay = 0;
-
-                wrote = true;
-                packet.Return();
+                NetworkStream.Flush();
             }
-
-            return wrote;
-        }
-        catch (Exception exception)
-        {
-            if (!IsDisconnected)
+            catch (Exception exception)
             {
-                disconnect(exception: exception);
-            }
+                if (!IsDisconnected)
+                {
+                    disconnect(exception: exception);
+                }
 
-            return false;
+                break;
+            }
         }
     }
 
