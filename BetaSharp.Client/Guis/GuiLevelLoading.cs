@@ -41,8 +41,8 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
                 InternalConnection clientConnection = new(null, "Internal-Client");
                 InternalConnection serverConnection = new(null, "Internal-Server");
 
-                clientConnection.AssignRemote(serverConnection);
-                serverConnection.AssignRemote(clientConnection);
+                clientConnection.RemoteConnection = serverConnection;
+                serverConnection.RemoteConnection = clientConnection;
 
                 Game.internalServer.connections.AddInternalConnection(serverConnection);
                 _logger.LogInformation("[Internal-Client] Created internal connection");

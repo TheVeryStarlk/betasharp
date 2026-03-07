@@ -6,49 +6,68 @@ namespace BetaSharp.Network;
 
 public class InternalConnection : Connection
 {
-    public InternalConnection RemoteConnection { get; set; }
+    public override IPEndPoint? Address { get; } = new(IPAddress.Parse("127.0.0.1"), 12345);
 
-    public string Name { get; set; }
+    public InternalConnection? RemoteConnection { get; set; }
 
+    private readonly string _name;
     private readonly ILogger<InternalConnection> _logger = Log.Instance.For<InternalConnection>();
 
     public InternalConnection(NetworkHandler? networkHandler, string name)
     {
-        this.NetworkHandler = networkHandler;
-        Name = name;
-    }
-
-    public void AssignRemote(InternalConnection remote)
-    {
-        RemoteConnection = remote;
+        NetworkHandler = networkHandler;
+        _name = name;
     }
 
     public override void queuePacket(Packet packet)
     {
-        if (!IsDisconnected)
+        if (IsDisconnected)
         {
-            packet.ProcessForInternal();
+            return;
+        }
 
-            if (RemoteConnection != null && !RemoteConnection.IsDisconnected)
-            {
-                RemoteConnection.ReceivePacket(packet);
-            }
+        packet.ProcessForInternal();
+
+        if (RemoteConnection is { IsDisconnected: false })
+        {
+            RemoteConnection.ReadQueue.Enqueue(packet);
         }
     }
 
-    protected void ReceivePacket(Packet packet)
+    public override void disconnect(string reason = "disconnect.genericReason", Exception? exception = null)
     {
-        ReadQueue.Enqueue(packet);
+        if (IsDisconnected)
+        {
+            return;
+        }
+
+        IsDisconnected = true;
+
+        DisconnectedReason = reason;
+        DisconnectedException = exception;
+
+        _logger.LogInformation("{Name}: Disconnected: {Reason}", _name, reason);
+
+        if (RemoteConnection is { IsDisconnected: false })
+        {
+            RemoteConnection.OnRemoteDisconnect(reason, exception);
+        }
+    }
+
+    public override void tick()
+    {
+        ProcessPackets();
+
+        if (IsDisconnected && ReadQueue.IsEmpty)
+        {
+            NetworkHandler?.onDisconnected(DisconnectedReason, DisconnectedException);
+        }
     }
 
     protected override void ProcessPackets()
     {
-        if (NetworkHandler == null)
-        {
-            throw new Exception($"InternalConnection is not initialized");
-        }
+        ArgumentNullException.ThrowIfNull(NetworkHandler);
 
-        int count = 0;
         while (!ReadQueue.IsEmpty)
         {
             if (!ReadQueue.TryDequeue(out var packet))
@@ -58,53 +77,21 @@ public class InternalConnection : Connection
 
             packet.Apply(NetworkHandler);
             packet.Return();
-
-            count++;
-        }
-
-        if (count > 0)
-        {
-            // _logger.LogInformation($"[{Name}] Processed {count} packets");
         }
     }
 
-    public override void disconnect(string reason, Exception? exception = null)
+    private void OnRemoteDisconnect(string reason, Exception? disconnectedException)
     {
-        if (!IsDisconnected)
+        if (IsDisconnected)
         {
-            IsDisconnected = true;
-
-            DisconnectedReason = reason;
-            DisconnectedException = exception;
-
-            _logger.LogInformation($"[{Name}] Disconnected: {reason}");
-
-            if (RemoteConnection != null && !RemoteConnection.IsDisconnected)
-            {
-                RemoteConnection.OnRemoteDisconnect(reason, exception);
-            }
+            return;
         }
-    }
 
-    public void OnRemoteDisconnect(string reason, Exception? disconnectedException)
-    {
-        if (!IsDisconnected)
-        {
-            IsDisconnected = true;
-            DisconnectedReason = reason;
-            DisconnectedException = disconnectedException;
-            _logger.LogInformation($"[{Name}] Remote disconnected: {reason}");
-        }
-    }
+        IsDisconnected = true;
 
-    public override void tick()
-    {
-        ProcessPackets();
-        if (IsDisconnected && ReadQueue.IsEmpty)
-        {
-            NetworkHandler?.onDisconnected(DisconnectedReason, DisconnectedException);
-        }
-    }
+        DisconnectedReason = reason;
+        DisconnectedException = disconnectedException;
 
-    public override IPEndPoint? Address { get; } = new(IPAddress.Parse("127.0.0.1"), 12345);
+        _logger.LogInformation("{Name}: Disconnected: {Reason}", _name, reason);
+    }
 }
