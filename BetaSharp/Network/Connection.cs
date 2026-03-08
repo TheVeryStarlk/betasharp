@@ -187,6 +187,8 @@ public class Connection
                         continue;
                     }
 
+                    packet.UseCount++;
+
                     Packet.Write(packet, _networkStream);
                     packet.Return();
                 }
@@ -197,6 +199,8 @@ public class Connection
                     {
                         continue;
                     }
+
+                    packet.UseCount++;
 
                     _delay = 0;
 

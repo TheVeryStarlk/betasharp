@@ -4,6 +4,8 @@ namespace BetaSharp.Network.Packets.Play;
 
 public class KeepAlivePacket() : Packet(PacketId.KeepAlive)
 {
+    public static Packet Get() => Get((byte)PacketId.KeepAlive);
+
     public override void Apply(NetworkHandler handler) { }
 
     public override void Read(NetworkStream stream) { }

@@ -708,7 +708,7 @@ public class ClientNetworkHandler : NetworkHandler
             else
             {
                 screenHandler.onAcknowledgementDenied(packet.actionType);
-                addToSendQueue(new ScreenHandlerAcknowledgementPacket(packet.syncId, packet.actionType, true));
+                addToSendQueue(ScreenHandlerAcknowledgementPacket.Get(packet.syncId, packet.actionType, true));
             }
         }
 

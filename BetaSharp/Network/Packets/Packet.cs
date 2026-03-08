@@ -7,41 +7,87 @@ using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Network.Packets;
 
-public abstract class Packet(PacketId id)
+public abstract class Packet
 {
     public static readonly ObjectFactoryPool<Packet, PacketRegisterItem> Registry = new(256);
     private static readonly ILogger<Packet> s_logger = Log.Instance.For<Packet>();
 
-    public readonly byte Id = (byte)id;
+    public long CreationTime;
+
+    public readonly byte Id;
+
+    /// <summary>
+    /// When sending to multiple clients, we only want to return when all packages have been sent
+    /// </summary>
+    public short UseCount;
+
+    protected Packet(byte id)
+    {
+        Id = id;
+    }
+
+    protected Packet(PacketId id)
+    {
+        Id = (byte)id;
+    }
+
+    public void Return()
+    {
+        if (--UseCount > 0) return;
+
+        if (Registry.TryGet(Id, out PacketRegisterItem? item))
+        {
+            item.Return(this);
+            return;
+        }
+
+        s_logger.LogError("Packet id " + Id + " not found");
+    }
+
+    public static void Return(Packet packet)
+    {
+        packet.Return();
+    }
+
+    public static T Get<T>(PacketId id) where T : Packet => (T)Get((byte)id);
+
+    public static Packet Get(byte id)
+    {
+        if (!Registry.TryGet(id, out PacketRegisterItem? packetR))
+        {
+            throw new Exception("Unable to get packet id " + id);
+        }
+
+        return packetR.Get();
+    }
 
     public static Packet? Read(NetworkStream stream, bool server)
     {
-        Packet? packet;
-
+        Packet packet = null;
+        int rawId;
         try
         {
-            int rawId = stream.ReadByte();
-
-            if (rawId is -1)
+            rawId = stream.ReadByte();
+            if (rawId == -1)
             {
                 return null;
             }
 
-            if (!Registry.TryGet(rawId, out PacketRegisterItem? packetRegistry))
+            if (!Registry.TryGet(rawId, out PacketRegisterItem? packetR))
             {
-                throw new IOException("Bad packet ID " + rawId);
+                throw new IOException("Bad packet id " + rawId);
             }
 
             if (server)
             {
-                if (!packetRegistry.ServerBound) throw new IOException("Bad server bound packet ID " + rawId);
+                if (!packetR.ServerBound) throw new IOException("Bad server bound packet id " + rawId);
             }
             else
             {
-                if (!packetRegistry.ClientBound) throw new IOException("Bad client bound packet ID " + rawId);
+                if (!packetR.ClientBound) throw new IOException("Bad client bound packet id " + rawId);
             }
 
-            packet = packetRegistry.Get();
+            packet = packetR.Get();
 
             packet.Read(stream);
         }
@@ -54,12 +100,11 @@ public abstract class Packet(PacketId id)
         return packet;
     }
 
-    private static PacketRegisterItem New(PacketId rawId, bool clientBound, bool serverBound, bool worldPacket, Func<Packet> factory) => new((byte)rawId, clientBound, serverBound, worldPacket, factory);
-
     public static void Write(Packet packet, NetworkStream stream)
     {
-        stream.WriteByte(packet.Id);
+        stream.WriteByte((byte)packet.Id);
         packet.Write(stream);
+        packet.Return();
     }
 
     public abstract void Read(NetworkStream stream);
@@ -70,20 +115,7 @@ public abstract class Packet(PacketId id)
 
     public abstract int Size();
 
-    public virtual void ProcessForInternal()
-    {
-    }
-
-    public void Return()
-    {
-        if (Registry.TryGet(Id, out PacketRegisterItem? item))
-        {
-            item.Return(this);
-            return;
-        }
-
-        s_logger.LogError("Packet id " + Id + " not found");
-    }
+    public virtual void ProcessForInternal() { }
 
     static Packet()
     {
@@ -151,8 +183,20 @@ public abstract class Packet(PacketId id)
 
     public class PacketRegisterItem(byte rawId, bool clientBound, bool serverBound, bool worldPacket, Func<Packet> factory) : FactoryPoolItem<Packet>(rawId, item: factory)
     {
+        public override Packet Get()
+        {
+            var p = Item.Get();
+            // note. DateTimeOffset.UtcNow.UtcTicks would be slightly faster as no conversion would be needed
+            p.CreationTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            p.UseCount = 0;
+            return p;
+        }
+
         public readonly bool ClientBound = clientBound;
         public readonly bool ServerBound = serverBound;
         public readonly bool WorldPacket = worldPacket;
     }
+
+    private static PacketRegisterItem New(PacketId rawId, bool clientBound, bool serverBound, bool worldPacket, Func<Packet> factory) =>
+        new((byte)rawId, clientBound, serverBound, worldPacket, factory);
 }
