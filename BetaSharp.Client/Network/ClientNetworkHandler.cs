@@ -73,7 +73,7 @@ public class ClientNetworkHandler : NetworkHandler
 
             if (ticks++ - lastKeepAliveTime > 200)
             {
-                SendPacket(new KeepAlivePacket());
+                SendPacket(KeepAlivePacket.Get());
             }
         }
     }
