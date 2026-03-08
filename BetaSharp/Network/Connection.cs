@@ -22,6 +22,7 @@ public class Connection
     protected List delayedSendQueue = Collections.synchronizedList(new ArrayList());
     protected NetHandler? networkHandler;
     protected bool closed;
+    public bool betaSharpClient = false;
     private readonly java.lang.Thread _writer;
     private readonly java.lang.Thread _reader;
     protected bool disconnected;
@@ -65,8 +66,11 @@ public class Connection
 
     public virtual void sendPacket(Packet packet)
     {
+        if (packet is ExtendedProtocolPacket && !betaSharpClient) return;
+
         if (!closed)
         {
+            packet.UseCount++;
             object lockObj = lck;
             lock (lockObj)
             {
@@ -112,7 +116,6 @@ public class Connection
                 sizeStats = TOTAL_SEND_SIZE;
                 sizeStats[packet.Id] += packet.Size() + 1;
                 wrotePacket = true;
-                packet.Return();
             }
 
             if (_delay-- <= 0 && !delayedSendQueue.isEmpty() && (lag == 0 || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
@@ -130,7 +133,6 @@ public class Connection
                 sizeStats[packet.Id] += packet.Size() + 1;
                 _delay = 0;
                 wrotePacket = true;
-                packet.Return();
             }
 
             return wrotePacket;
