@@ -66,6 +66,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             PlayerConnectionUpdateS2CPacket.ConnectionUpdateType.Leave,
             player.name
         ));
+        Discord.Channel!.SendMessageAsync($"{player.name} left the game.");
         server.playerManager.sendToAll(ChatMessagePacket.Get("§e" + player.name + " left the game."));
         disconnected = true;
     }
@@ -437,6 +438,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             PlayerConnectionUpdateS2CPacket.ConnectionUpdateType.Leave,
             player.name
         ));
+        Discord.Channel!.SendMessageAsync($"{player.name} left the game.");
         server.playerManager.sendToAll(ChatMessagePacket.Get("§e" + player.name + " left the game."));
         disconnected = true;
     }

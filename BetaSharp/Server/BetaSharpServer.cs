@@ -274,7 +274,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                         return;
                     }
 
-                    playerManager.sendToAll(new ChatMessagePacket($"<{eventArgs.Author.Username} Discord> {eventArgs.Message.Content}"));
+                    playerManager.sendToAll(ChatMessagePacket.Get($"<{eventArgs.Author.Username} Discord> {eventArgs.Message.Content}"));
                 };
 
                 long accumulatedTime = 0L;

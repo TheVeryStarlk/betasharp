@@ -140,6 +140,7 @@ public class ServerLoginNetworkHandler : NetHandler
             handler.sendPacket(PlayerSpawnPositionS2CPacket.Get(var4.X, var4.Y, var4.Z));
             server.playerManager.sendWorldInfo(ent, var3);
             server.playerManager.sendToAll(PlayerConnectionUpdateS2CPacket.Get(ent.id, PlayerConnectionUpdateS2CPacket.ConnectionUpdateType.Join, ent.name));
+            Discord.Channel!.SendMessageAsync($"{ent.name} joined the game.");
             server.playerManager.sendToAll(ChatMessagePacket.Get("§e" + ent.name + " joined the game."));
             server.playerManager.addPlayer(ent);
             handler.teleport(ent.x, ent.y, ent.z, ent.yaw, ent.pitch);
