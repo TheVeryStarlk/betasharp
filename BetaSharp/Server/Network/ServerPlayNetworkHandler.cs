@@ -499,6 +499,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             }
             else
             {
+                Discord.Channel!.SendMessageAsync("<" + player.name + "> " + var2);
                 var2 = "<" + player.name + "> " + var2;
                 _logger.LogInformation(var2);
                 server.playerManager.sendToAll(ChatMessagePacket.Get(var2));
