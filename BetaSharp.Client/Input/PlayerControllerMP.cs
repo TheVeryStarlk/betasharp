@@ -21,6 +21,7 @@ public class PlayerControllerMP : PlayerController
     private bool isHittingBlock;
     private readonly ClientNetworkHandler netClientHandler;
     private int currentPlayerItem;
+    private int _breakingSlot = -1;
 
     public PlayerControllerMP(BetaSharp var1, ClientNetworkHandler var2) : base(var1)
     {
@@ -74,6 +75,7 @@ public class PlayerControllerMP : PlayerController
                 curBlockDamageMP = 0.0F;
                 prevBlockDamageMP = 0.0F;
                 field_9441_h = 0.0F;
+                _breakingSlot = Game.player.inventory.selectedSlot;
             }
         }
 
@@ -83,6 +85,7 @@ public class PlayerControllerMP : PlayerController
     {
         curBlockDamageMP = 0.0F;
         isHittingBlock = false;
+        _breakingSlot = -1;
     }
 
     public override void sendBlockRemoving(int var1, int var2, int var3, int var4)
@@ -90,6 +93,17 @@ public class PlayerControllerMP : PlayerController
         if (isHittingBlock)
         {
             syncCurrentPlayItem();
+            if (Game.player.inventory.selectedSlot != _breakingSlot)
+            {
+                netClientHandler.addToSendQueue(PlayerActionC2SPacket.Get(1, currentBlockX, currentBlockY, currentblockZ, 0));
+                isHittingBlock = false;
+                curBlockDamageMP = 0.0F;
+                prevBlockDamageMP = 0.0F;
+                field_9441_h = 0.0F;
+                _breakingSlot = -1;
+                return;
+            }
+
             if (blockHitDelay > 0)
             {
                 --blockHitDelay;

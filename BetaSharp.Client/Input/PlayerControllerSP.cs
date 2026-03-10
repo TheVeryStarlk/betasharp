@@ -15,6 +15,7 @@ public class PlayerControllerSP : PlayerController
     private float prevBlockDamage;
     private float field_1069_h;
     private int blockHitWait;
+    private int _breakingSlot = -1;
 
     public PlayerControllerSP(BetaSharp var1) : base(var1)
     {
@@ -57,6 +58,7 @@ public class PlayerControllerSP : PlayerController
         if (var5 > 0 && curBlockDamage == 0.0F)
         {
             Block.Blocks[var5].onBlockBreakStart(Game.world, var1, var2, var3, Game.player);
+            _breakingSlot = Game.player.inventory.selectedSlot;
         }
 
         if (var5 > 0 && Block.Blocks[var5].getHardness(Game.player) >= 1.0F)
@@ -70,6 +72,7 @@ public class PlayerControllerSP : PlayerController
     {
         curBlockDamage = 0.0F;
         blockHitWait = 0;
+        _breakingSlot = -1;
     }
 
     public override void sendBlockRemoving(int var1, int var2, int var3, int var4)
@@ -82,6 +85,17 @@ public class PlayerControllerSP : PlayerController
         {
             if (var1 == field_1074_c && var2 == field_1073_d && var3 == field_1072_e)
             {
+                if (Game.player.inventory.selectedSlot != _breakingSlot)
+                {
+                    resetBlockRemoving();
+                    field_1069_h = 0.0F;
+                    prevBlockDamage = 0.0F;
+                    field_1074_c = -1;
+                    field_1073_d = -1;
+                    field_1072_e = -1;
+                    return;
+                }
+
                 int var5 = Game.world.getBlockId(var1, var2, var3);
                 if (var5 == 0)
                 {

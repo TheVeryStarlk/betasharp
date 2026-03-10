@@ -318,6 +318,11 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
                     player.interactionManager.onBlockBreakingAction(var5, var6, var7, packet.direction);
                 }
             }
+            else if (packet.action == 1)
+            {
+                player.interactionManager.abortMining();
+                player.networkHandler.sendPacket(BlockUpdateS2CPacket.Get(var5, var6, var7, var2));
+            }
             else if (packet.action == 2)
             {
                 player.interactionManager.continueMining(var5, var6, var7);

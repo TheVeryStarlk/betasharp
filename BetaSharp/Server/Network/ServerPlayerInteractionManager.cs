@@ -50,6 +50,15 @@ public class ServerPlayerInteractionManager
         }
     }
 
+    public void abortMining()
+    {
+        mining = false;
+        failedMiningStartTime = 0;
+        failedMiningX = -1;
+        failedMiningY = -1;
+        failedMiningZ = -1;
+    }
+
     public void onBlockBreakingAction(int x, int y, int z, int direction)
     {
         world.extinguishFire(null, x, y, z, direction);
