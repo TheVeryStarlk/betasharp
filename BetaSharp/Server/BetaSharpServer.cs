@@ -119,7 +119,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
     private void loadWorld(string worldDir, WorldSettings settings)
     {
         worlds = new ServerWorld[2];
-        RegionWorldStorage worldStorage = new(AppContext.BaseDirectory, worldDir, true);
+        RegionWorldStorage worldStorage = new(Directory.GetCurrentDirectory(), worldDir, true);
 
         for (int i = 0; i < worlds.Length; i++)
         {
