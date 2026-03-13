@@ -41,7 +41,7 @@ internal class DedicatedPlayerManager : PlayerManager
         }
         catch (Exception exception)
         {
-            _logger.LogWarning($"Failed to load ban list: {exception}");
+            _logger.LogWarning("Failed to load ban list {Exception}", exception);
         }
     }
 
@@ -58,7 +58,7 @@ internal class DedicatedPlayerManager : PlayerManager
         }
         catch (Exception exception)
         {
-            _logger.LogWarning($"Failed to save ban list: {exception}");
+            _logger.LogWarning("Failed to save ban list {Exception}", exception);
         }
     }
 
@@ -76,7 +76,7 @@ internal class DedicatedPlayerManager : PlayerManager
         }
         catch (Exception exception)
         {
-            _logger.LogWarning($"Failed to load ip ban list: {exception}");
+            _logger.LogWarning("Failed to load IP ban list {Exception}", exception);
         }
     }
 
@@ -93,7 +93,7 @@ internal class DedicatedPlayerManager : PlayerManager
         }
         catch (Exception exception)
         {
-            _logger.LogWarning($"Failed to save ip ban list: {exception}");
+            _logger.LogWarning("Failed to save IP ban list {Exception}", exception);
         }
     }
 
@@ -111,7 +111,7 @@ internal class DedicatedPlayerManager : PlayerManager
         }
         catch (Exception exception)
         {
-            _logger.LogWarning($"Failed to load ip ban list: {exception}");
+            _logger.LogWarning("Failed to load OP list {Exception}", exception);
         }
     }
 
@@ -128,7 +128,7 @@ internal class DedicatedPlayerManager : PlayerManager
         }
         catch (Exception exception)
         {
-            _logger.LogWarning($"Failed to save ip ban list: {exception}");
+            _logger.LogWarning("Failed to save OP list {Exception}", exception);
         }
     }
 
@@ -146,7 +146,7 @@ internal class DedicatedPlayerManager : PlayerManager
         }
         catch (Exception exception)
         {
-            _logger.LogWarning($"Failed to load white-list: {exception}");
+            _logger.LogWarning("Failed to load white-lis: {Exception}", exception);
         }
     }
 
@@ -163,7 +163,7 @@ internal class DedicatedPlayerManager : PlayerManager
         }
         catch (Exception exception)
         {
-            _logger.LogWarning($"Failed to save white-list: {exception}");
+            _logger.LogWarning("Failed to save white-list {Exception}", exception);
         }
     }
 }
