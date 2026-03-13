@@ -54,11 +54,6 @@ public class InternalServer : BetaSharpServer
         return result;
     }
 
-    public override FileStream getFile(string path)
-    {
-        return File.Open(Path.Combine(_worldPath, path), FileMode.OpenOrCreate);
-    }
-
     public void SetDifficulty(int difficulty)
     {
         lock (_difficultyLock)

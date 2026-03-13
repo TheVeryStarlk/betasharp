@@ -4,19 +4,15 @@ namespace BetaSharp.Server;
 
 internal class DedicatedPlayerManager : PlayerManager
 {
+    private const string BannedPlayersPath = "banned-players.txt";
+    private const string BannedIpsPath = "banned-ips.txt";
+    private const string OperatorsPath = "ops.txt";
+    private const string WhitelistPath = "white-list.txt";
+
     private readonly ILogger<DedicatedPlayerManager> _logger = Log.Instance.For<DedicatedPlayerManager>();
-    private readonly FileStream _bannedPlayersFile;
-    private readonly FileStream _bannedIpsFile;
-    private readonly FileStream _operatorsFile;
-    private readonly FileStream _whitelistFile;
 
     public DedicatedPlayerManager(BetaSharpServer server) : base(server)
     {
-        _bannedPlayersFile = server.getFile("banned-players.txt");
-        _bannedIpsFile = server.getFile("banned-ips.txt");
-        _operatorsFile = server.getFile("ops.txt");
-        _whitelistFile = server.getFile("white-list.txt");
-
         loadBannedPlayers();
         loadBannedIps();
         loadOperators();
@@ -32,7 +28,7 @@ internal class DedicatedPlayerManager : PlayerManager
         try
         {
             bannedPlayers.Clear();
-            using StreamReader reader = new(_bannedPlayersFile);
+            using StreamReader reader = new(BannedPlayersPath);
 
             while (reader.ReadLine() is { } line)
             {
@@ -49,7 +45,7 @@ internal class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            using StreamWriter writer = new(_bannedPlayersFile);
+            using StreamWriter writer = new(BannedPlayersPath);
 
             foreach (string player in bannedPlayers)
             {
@@ -67,7 +63,7 @@ internal class DedicatedPlayerManager : PlayerManager
         try
         {
             bannedIps.Clear();
-            using StreamReader reader = new(_bannedIpsFile);
+            using StreamReader reader = new(BannedIpsPath);
 
             while (reader.ReadLine() is { } line)
             {
@@ -84,7 +80,7 @@ internal class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            using StreamWriter writer = new(_bannedIpsFile);
+            using StreamWriter writer = new(BannedIpsPath);
 
             foreach (string ip in bannedIps)
             {
@@ -102,7 +98,7 @@ internal class DedicatedPlayerManager : PlayerManager
         try
         {
             ops.Clear();
-            using StreamReader reader = new(_operatorsFile);
+            using StreamReader reader = new(OperatorsPath);
 
             while (reader.ReadLine() is { } line)
             {
@@ -119,7 +115,7 @@ internal class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            using StreamWriter writer = new(_operatorsFile);
+            using StreamWriter writer = new(OperatorsPath);
 
             foreach (string op in ops)
             {
@@ -137,7 +133,7 @@ internal class DedicatedPlayerManager : PlayerManager
         try
         {
             whitelist.Clear();
-            using StreamReader reader = new(_whitelistFile);
+            using StreamReader reader = new(WhitelistPath);
 
             while (reader.ReadLine() is { } line)
             {
@@ -154,7 +150,7 @@ internal class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            using StreamWriter writer = new(_whitelistFile);
+            using StreamWriter writer = new(WhitelistPath);
 
             foreach (string name in whitelist)
             {

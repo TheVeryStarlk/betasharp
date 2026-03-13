@@ -84,9 +84,4 @@ internal class DedicatedServer(IServerConfiguration config) : BetaSharpServer(co
             s_logger.LogError($"Failed to start the BetaSharp server: {e}");
         }
     }
-
-    public override FileStream getFile(string path)
-    {
-        return File.Open(path, FileMode.OpenOrCreate);
-    }
 }
