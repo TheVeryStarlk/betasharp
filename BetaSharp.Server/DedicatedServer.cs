@@ -3,7 +3,7 @@ using BetaSharp.Server.Network;
 using BetaSharp.Server.Threading;
 using DSharpPlus;
 using DSharpPlus.Entities;
-using java.lang;
+using BetaSharp.Util;
 using Microsoft.Extensions.Logging;
 using Exception = System.Exception;
 
@@ -12,6 +12,8 @@ namespace BetaSharp.Server;
 internal class DedicatedServer(IServerConfiguration config) : BetaSharpServer(config)
 {
     private static readonly ILogger<DedicatedServer> s_logger = Log.Instance.For<DedicatedServer>();
+
+    public override FileInfo GetFile(string path) => new(Path.Combine(".", path));
 
     protected override PlayerManager CreatePlayerManager()
     {
@@ -25,10 +27,12 @@ internal class DedicatedServer(IServerConfiguration config) : BetaSharpServer(co
         consoleInputThread.start();
 
         s_logger.LogInformation("Starting BetaSharp server version Beta 1.7.3");
-        if (Runtime.getRuntime().maxMemory() / 1024L / 1024L < 512L)
+        // This instruction is container safe
+        long availableMb = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes / (1024L * 1024L);
+        if (availableMb < 512)
         {
             s_logger.LogWarning("**** NOT ENOUGH RAM!");
-            s_logger.LogWarning("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
+            s_logger.LogWarning("To start the server ensure that a minimum of 512MB of RAM is available.");
         }
 
         s_logger.LogInformation("Loading properties");
@@ -70,9 +74,10 @@ internal class DedicatedServer(IServerConfiguration config) : BetaSharpServer(co
         return base.Init();
     }
 
-    public static async Task Main(string[] args)
+    public static async Task Main()
     {
         Log.Instance.Initialize(Directory.GetCurrentDirectory());
+        Bootstrap.Initialize();
         AssetManager.Initialize(AssetManager.AssetProfile.Headless);
 
         var configuration = new DiscordConfiguration
@@ -90,10 +95,9 @@ internal class DedicatedServer(IServerConfiguration config) : BetaSharpServer(co
 
         try
         {
-            DedicatedServerConfiguration config = new(new java.io.File("server.properties"));
+            DedicatedServerConfiguration config = new(new FileInfo("server.properties"));
             DedicatedServer server = new(config);
-
-            new RunServerThread(server, "Server thread").start();
+            server.RunThreaded("Server Thread");
         }
         catch (Exception e)
         {
@@ -101,10 +105,5 @@ internal class DedicatedServer(IServerConfiguration config) : BetaSharpServer(co
         }
 
         await Task.Delay(-1);
-    }
-
-    public override java.io.File getFile(string path)
-    {
-        return new java.io.File(path);
     }
 }
