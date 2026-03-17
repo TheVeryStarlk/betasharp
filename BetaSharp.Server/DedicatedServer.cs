@@ -78,7 +78,7 @@ internal class DedicatedServer(IServerConfiguration config) : BetaSharpServer(co
     {
         Log.Instance.Initialize(Directory.GetCurrentDirectory());
         Bootstrap.Initialize();
-        AssetManager.Initialize(AssetManager.AssetProfile.Headless);
+        AssetManager.Initialize(AssetManager.AssetProfile.Full);
 
         var configuration = new DiscordConfiguration
         {
