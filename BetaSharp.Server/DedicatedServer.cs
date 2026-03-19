@@ -78,7 +78,6 @@ internal class DedicatedServer(IServerConfiguration config) : BetaSharpServer(co
     public static async Task Main(string[] args)
     {
         Log.Instance.Initialize(Directory.GetCurrentDirectory());
-        Bootstrap.Initialize();
         AssetManager.Initialize(AssetManager.AssetProfile.Full);
 
         var configuration = new DiscordConfiguration
@@ -93,6 +92,7 @@ internal class DedicatedServer(IServerConfiguration config) : BetaSharpServer(co
 
         Discord.Id = ulong.Parse(args[1]);
         Discord.Channel = await Discord.Client.GetChannelAsync(ulong.Parse(args[1]));
+        Bootstrap.Initialize();
 
         try
         {
