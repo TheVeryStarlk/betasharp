@@ -165,9 +165,9 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
                 double var13 = packet.eyeHeight - packet.y;
                 if (!player.isSleeping() && (var13 > 1.65 || var13 < 0.1))
                 {
-                    disconnect("Illegal stance");
+                    // disconnect("Illegal stance");
                     _logger.LogWarning($"{player.name} had an illegal stance: {var13}");
-                    return;
+                    // return;
                 }
 
                 if (Math.Abs(packet.x) > 3.2E7 || Math.Abs(packet.z) > 3.2E7)
