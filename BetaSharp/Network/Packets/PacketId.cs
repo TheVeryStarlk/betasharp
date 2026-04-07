@@ -1,4 +1,4 @@
-﻿namespace BetaSharp.Network.Packets;
+namespace BetaSharp.Network.Packets;
 
 public enum PacketId : byte
 {
@@ -59,6 +59,9 @@ public enum PacketId : byte
     MapUpdateS2C = 131,
     PlayerConnectionUpdateS2C = 132,
     PlayerGameModeUpdateS2C = 133,
+    RegistryDataS2C = 134,
+    FinishConfigurationS2C = 135,
+    BundleS2C = 150,
     IncreaseStatS2C = 200,
     Disconnect = 255,
 }

@@ -1,4 +1,4 @@
-﻿using BetaSharp.Server.Command;
+using BetaSharp.Server.Command;
 
 namespace BetaSharp.Server.Commands;
 
@@ -20,6 +20,6 @@ public class BanCommand : ICommand
         string target = c.Args[0];
         c.Server.playerManager.banPlayer(target);
         c.LogOp("Banning " + target);
-        c.Server.playerManager.getPlayer(target)?.networkHandler.disconnect("Banned by admin");
+        c.Server.playerManager.getPlayer(target)?.NetworkHandler.disconnect("Banned by admin");
     }
 }

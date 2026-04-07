@@ -82,10 +82,7 @@ public class ParticleManager
         _specialParticles.Clear();
     }
 
-    public string getStatistics()
-    {
-        return (_layers[0].Count + _layers[1].Count + _layers[2].Count).ToString();
-    }
+    public int ActiveParticleCount => _layers[0].Count + _layers[1].Count + _layers[2].Count;
 
     public void AddSpecialParticle(ISpecialParticle particle)
     {
@@ -307,7 +304,7 @@ public class ParticleManager
     {
         ApplyBaseVelocity(x, y, z, out double bvx, out double bvy, out double bvz, vx, vy, vz);
 
-        int texIndex = block.getTexture(hitFace, meta);
+        int texIndex = block.GetTexture(hitFace.ToSide(), meta);
         float gravity = block.particleFallSpeedModifier;
         float r = 0.6f, g = 0.6f, b = 0.6f;
         float baseScale = RandomBaseScale() / 2.0f;
@@ -335,7 +332,7 @@ public class ParticleManager
         bvy = (bvy - 0.1) * velScale + 0.1;
         bvz *= velScale;
 
-        int texIndex = block.getTexture(hitFace, meta);
+        int texIndex = block.GetTexture(hitFace.ToSide(), meta);
         float gravity = block.particleFallSpeedModifier;
         float r = 0.6f, g = 0.6f, b = 0.6f;
         float baseScale = RandomBaseScale() * sizeScale / 2.0f;

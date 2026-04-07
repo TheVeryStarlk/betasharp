@@ -42,7 +42,7 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
         this.connection = connection;
         connection.setNetworkHandler(this);
         this.player = player;
-        player.networkHandler = this;
+        player.NetworkHandler = this;
     }
 
     public void tick()
@@ -52,13 +52,13 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
 
         if (!moved) player.IdleTick();
 
-        if (ticks++ - lastKeepAliveTime > 20) sendPacket(KeepAlivePacket.Get());
+        if (ticks++ - lastKeepAliveTime > 20) SendPacket(KeepAlivePacket.Get());
     }
 
     public void disconnect(string reason)
     {
         player.onDisconnect();
-        sendPacket(DisconnectPacket.Get(reason));
+        SendPacket(DisconnectPacket.Get(reason));
         connection.disconnect();
         server.playerManager.disconnect(player);
         server.playerManager.sendToAll(PlayerConnectionUpdateS2CPacket.Get(
@@ -66,7 +66,6 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
             PlayerConnectionUpdateS2CPacket.ConnectionUpdateType.Leave,
             player.name
         ));
-        Discord.Channel!.SendMessageAsync($"{player.name} left the game.");
         server.playerManager.sendToAll(ChatMessagePacket.Get("§e" + player.name + " left the game."));
         disconnected = true;
     }
@@ -165,9 +164,9 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
                 double var13 = packet.eyeHeight - packet.y;
                 if (!player.isSleeping() && (var13 > 1.65 || var13 < 0.1))
                 {
-                    // disconnect("Illegal stance");
+                    disconnect("Illegal stance");
                     _logger.LogWarning($"{player.name} had an illegal stance: {var13}");
-                    // return;
+                    return;
                 }
 
                 if (Math.Abs(packet.x) > 3.2E7 || Math.Abs(packet.z) > 3.2E7)
@@ -239,7 +238,7 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
             else if (var15 >= -0.03125)
             {
                 floatingTime++;
-                if (floatingTime > 80)
+                if (floatingTime > 80 && player.GameMode.DisallowFlying)
                 {
                     _logger.LogWarning($"{player.name} was kicked for floating too long!");
                     disconnect("Flying is not enabled on this server");
@@ -260,7 +259,7 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
         teleportTargetY = y;
         teleportTargetZ = z;
         player.setPositionAndAngles(x, y, z, yaw, pitch);
-        player.networkHandler.sendPacket(PlayerMoveFullPacket.Get(x, y + 1.62F, y, z, yaw, pitch, false));
+        player.NetworkHandler.SendPacket(PlayerMoveFullPacket.Get(x, y + 1.62F, y, z, yaw, pitch, false));
     }
 
 
@@ -281,7 +280,7 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
             {
                 if (MathHelper.GetDistSqr(player.x, player.y, player.z, x, y, z) < 256.0)
                 {
-                    player.networkHandler.sendPacket(BlockUpdateS2CPacket.Get(x, y, z, world));
+                    player.NetworkHandler.SendPacket(BlockUpdateS2CPacket.Get(x, y, z, world));
                 }
 
                 return;
@@ -299,7 +298,7 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
             {
                 if (!CanBypassSpawnProtection(x, z, world))
                 {
-                    player.networkHandler.sendPacket(BlockUpdateS2CPacket.Get(x, y, z, world));
+                    player.NetworkHandler.SendPacket(BlockUpdateS2CPacket.Get(x, y, z, world));
                 }
                 else
                 {
@@ -311,7 +310,7 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
                 player.interactionManager.continueMining(x, y, z);
                 if (world.Reader.GetBlockId(x, y, z) != 0)
                 {
-                    player.networkHandler.sendPacket(BlockUpdateS2CPacket.Get(x, y, z, world));
+                    player.NetworkHandler.SendPacket(BlockUpdateS2CPacket.Get(x, y, z, world));
                 }
             }
         }
@@ -329,7 +328,7 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
     public override void onPlayerInteractBlock(PlayerInteractBlockC2SPacket packet)
     {
         ServerWorld world = server.getWorld(player.dimensionId);
-        ItemStack stack = player.inventory.getSelectedItem();
+        ItemStack stack = player.inventory.GetItemInHand();
         if (packet.side == 255)
         {
             if (stack == null)
@@ -351,7 +350,7 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
                 player.interactionManager.interactBlock(player, world, stack, x, y, z, side);
             }
 
-            player.networkHandler.sendPacket(BlockUpdateS2CPacket.Get(x, y, z, world));
+            player.NetworkHandler.SendPacket(BlockUpdateS2CPacket.Get(x, y, z, world));
             switch (side)
             {
                 case 0:
@@ -374,10 +373,10 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
                     break;
             }
 
-            player.networkHandler.sendPacket(BlockUpdateS2CPacket.Get(x, y, z, world));
+            player.NetworkHandler.SendPacket(BlockUpdateS2CPacket.Get(x, y, z, world));
         }
 
-        stack = player.inventory.getSelectedItem();
+        stack = player.inventory.GetItemInHand();
         if (stack != null && stack.count == 0)
         {
             player.inventory.main[player.inventory.selectedSlot] = null;
@@ -388,9 +387,9 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
         Slot slot = player.currentScreenHandler.GetSlot(player.inventory, player.inventory.selectedSlot);
         player.currentScreenHandler.SendContentUpdates();
         player.skipPacketSlotUpdates = false;
-        if (!ItemStack.areEqual(player.inventory.getSelectedItem(), packet.stack))
+        if (!ItemStack.areEqual(player.inventory.GetItemInHand(), packet.stack))
         {
-            sendPacket(ScreenHandlerSlotUpdateS2CPacket.Get(player.currentScreenHandler.SyncId, slot.id, player.inventory.getSelectedItem()));
+            SendPacket(ScreenHandlerSlotUpdateS2CPacket.Get(player.currentScreenHandler.SyncId, slot.id, player.inventory.GetItemInHand()));
         }
     }
 
@@ -403,7 +402,6 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
             PlayerConnectionUpdateS2CPacket.ConnectionUpdateType.Leave,
             player.name
         ));
-        Discord.Channel!.SendMessageAsync($"{player.name} left the game.");
         server.playerManager.sendToAll(ChatMessagePacket.Get("§e" + player.name + " left the game."));
         disconnected = true;
     }
@@ -414,7 +412,7 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
         disconnect("Protocol error, unexpected packet");
     }
 
-    public void sendPacket(Packet packet)
+    public void SendPacket(Packet packet)
     {
         connection.sendPacket(packet);
         lastKeepAliveTime = ticks;
@@ -422,7 +420,7 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
 
     public override void onUpdateSelectedSlot(UpdateSelectedSlotC2SPacket packet)
     {
-        if (packet.selectedSlot >= 0 && packet.selectedSlot <= InventoryPlayer.getHotbarSize())
+        if (packet.selectedSlot >= 0 && packet.selectedSlot <= InventoryPlayer.HotbarSize)
         {
             player.interactionManager.UpdateMiningTool();
             player.inventory.selectedSlot = packet.selectedSlot;
@@ -435,40 +433,39 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
 
     public override void onChatMessage(ChatMessagePacket packet)
     {
-        string var2 = packet.chatMessage;
-        if (var2.Length > 100)
+        string msg = packet.chatMessage;
+        if (msg.Length > 100)
         {
             disconnect("Chat message too long");
         }
         else
         {
-            var2 = var2.Trim();
+            msg = msg.Trim();
 
-            for (int var3 = 0; var3 < var2.Length; var3++)
+            for (int var3 = 0; var3 < msg.Length; var3++)
             {
                 // Allow the section sign (§) for color/style codes as well as the standard allowed characters
-                if (var2[var3] == (char)167) // '§'
+                if (msg[var3] == (char)167) // '§'
                 {
                     continue;
                 }
 
-                if (!ChatAllowedCharacters.IsAllowedCharacter(var2[var3]))
+                if (!ChatAllowedCharacters.IsAllowedCharacter(msg[var3]))
                 {
                     disconnect("Illegal characters in chat");
                     return;
                 }
             }
 
-            if (var2.StartsWith("/"))
+            if (msg.StartsWith("/"))
             {
-                handleCommand(var2);
+                handleCommand(msg);
             }
             else
             {
-                Discord.Channel!.SendMessageAsync("<" + player.name + "> " + var2);
-                var2 = "<" + player.name + "> " + var2;
-                _logger.LogInformation(var2);
-                server.playerManager.sendToAll(ChatMessagePacket.Get(var2));
+                msg = "<" + player.name + "> " + msg;
+                _logger.LogInformation(msg);
+                server.playerManager.sendToAll(ChatMessagePacket.Get(msg));
             }
         }
     }
@@ -491,7 +488,7 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
         {
             string commandText = message[1..];
             _logger.LogInformation($"{player.name} tried command: {commandText}");
-            sendPacket(ChatMessagePacket.Get("§cYou do not have permission to use this command."));
+            SendPacket(ChatMessagePacket.Get("§cYou do not have permission to use this command."));
         }
     }
 
@@ -537,7 +534,7 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
 
     public void SendMessage(string message)
     {
-        sendPacket(ChatMessagePacket.Get("§7" + message));
+        SendPacket(ChatMessagePacket.Get("§7" + message));
     }
 
     public string Name => player.name;
@@ -580,7 +577,7 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
             ItemStack var2 = player.currentScreenHandler.onSlotClick(packet.slot, packet.button, packet.holdingShift, player);
             if (ItemStack.areEqual(packet.stack, var2))
             {
-                player.networkHandler.sendPacket(ScreenHandlerAcknowledgementPacket.Get(packet.syncId, packet.actionType, true));
+                player.NetworkHandler.SendPacket(ScreenHandlerAcknowledgementPacket.Get(packet.syncId, packet.actionType, true));
                 player.skipPacketSlotUpdates = true;
                 player.currentScreenHandler.SendContentUpdates();
                 player.updateCursorStack();
@@ -590,7 +587,7 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
             {
                 // should something be done adding fails?
                 transactions.TryAdd(player.currentScreenHandler.SyncId, packet.actionType);
-                player.networkHandler.sendPacket(ScreenHandlerAcknowledgementPacket.Get(packet.syncId, packet.actionType, false));
+                player.NetworkHandler.SendPacket(ScreenHandlerAcknowledgementPacket.Get(packet.syncId, packet.actionType, false));
                 player.currentScreenHandler.updatePlayerList(player, false);
 
                 int size = player.currentScreenHandler.Slots.Count;

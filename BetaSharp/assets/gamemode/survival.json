@@ -1,0 +1,18 @@
+{
+    "BrakeSpeed": 1,
+    "BlockDrops": true,
+    "CanBeTargeted": true,
+    "CanBreak": true,
+    "CanDrop": true,
+    "CanExhaustFire": true,
+    "CanInflictDamage": true,
+    "CanInteract": true,
+    "CanPickup": true,
+    "CanPlace": true,
+    "CanReceiveDamage": true,
+    "CanWalk": true,
+    "DisallowFlying": true,
+    "FiniteResources": true,
+    "NeedsAir": true,
+    "VisibleToWorld": true
+}

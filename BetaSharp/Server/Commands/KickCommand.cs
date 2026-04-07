@@ -1,4 +1,4 @@
-﻿using BetaSharp.Entities;
+using BetaSharp.Entities;
 using BetaSharp.Server.Command;
 
 namespace BetaSharp.Server.Commands;
@@ -23,7 +23,7 @@ public class KickCommand : ICommand
 
         if (targetPlayer != null)
         {
-            targetPlayer.networkHandler.disconnect("Kicked by admin");
+            targetPlayer.NetworkHandler.disconnect("Kicked by admin");
             c.LogOp("Kicking " + targetPlayer.name);
         }
         else

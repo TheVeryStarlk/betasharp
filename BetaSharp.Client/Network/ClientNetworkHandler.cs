@@ -2,14 +2,13 @@ using System.Net;
 using System.Net.Sockets;
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
+using BetaSharp.Client.Diagnostics;
 using BetaSharp.Client.Entities;
 using BetaSharp.Client.Entities.FX;
-using BetaSharp.Client.Guis;
-using BetaSharp.Client.Input;
-using BetaSharp.Client.Rendering.Entities;
 using BetaSharp.Client.Rendering.Entities;
 using BetaSharp.Client.Rendering.Particles;
 using BetaSharp.Client.Worlds;
+using BetaSharp.Diagnostics;
 using BetaSharp.Entities;
 using BetaSharp.Inventorys;
 using BetaSharp.Items;
@@ -17,6 +16,7 @@ using BetaSharp.Network;
 using BetaSharp.Network.Packets;
 using BetaSharp.Network.Packets.Play;
 using BetaSharp.Network.Packets.S2CPlay;
+using BetaSharp.Registries;
 using BetaSharp.Screens;
 using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
@@ -43,6 +43,8 @@ public class ClientNetworkHandler : NetHandler
     private int _ticks;
     private int _lastKeepAliveTime;
 
+    private readonly ClientRegistryAccess _clientRegistries = new();
+
     public ClientNetworkHandler(ClientNetworkContext context, string address, int port)
     {
         _context = context;
@@ -68,6 +70,13 @@ public class ClientNetworkHandler : NetHandler
         if (!Disconnected)
         {
             _netManager.tick();
+
+            MetricRegistry.Set(ClientMetrics.UploadBytes, _netManager.BytesWritten);
+            MetricRegistry.Set(ClientMetrics.DownloadBytes, _netManager.BytesRead);
+            MetricRegistry.Set(ClientMetrics.UploadPackets, _netManager.PacketsWritten);
+            MetricRegistry.Set(ClientMetrics.DownloadPackets, _netManager.PacketsRead);
+            MetricRegistry.Set(ClientMetrics.IsInternal, _netManager is InternalConnection);
+            MetricRegistry.Set(ClientMetrics.ServerAddress, _netManager.getAddress()?.ToString() ?? "Unknown");
 
             if (_ticks++ - _lastKeepAliveTime > 200)
             {
@@ -637,7 +646,7 @@ public class ClientNetworkHandler : NetHandler
         ClientPlayerEntity player = _context.PlayerHost.Player;
         if (packet.syncId == -1)
         {
-            player.inventory.setItemStack(packet.stack);
+            player.inventory.SetCursorStack(packet.stack);
         }
         else if (packet.syncId == 0 && packet.slot >= 36 && packet.slot < 45)
         {
@@ -814,9 +823,27 @@ public class ClientNetworkHandler : NetHandler
         }
     }
 
+    public override void onRegistryData(RegistryDataS2CPacket packet)
+    {
+        _clientRegistries.Accumulate(packet);
+    }
+
+    public override void onFinishConfiguration(FinishConfigurationS2CPacket packet)
+    {
+        _logger.LogInformation("Configuration finished");
+    }
+
     public override void onPlayerGameModeUpdate(PlayerGameModeUpdateS2CPacket packet)
     {
-        _context.PlayerHost.Player.GameMode = packet.GameMode;
+        Holder<GameMode>? gameMode = _clientRegistries.Get(RegistryKeys.GameModes, new ResourceLocation(packet.Namespace, packet.GameModeName));
+        if (gameMode is not null && _context.PlayerHost.Player is { } player)
+        {
+            player.GameModeHolder = gameMode;
+        }
+        else if (gameMode is null)
+        {
+            _logger.LogWarning("Received unknown game mode name '{Name}'", packet.GameModeName);
+        }
     }
 
     public override bool isServerSide()

@@ -26,12 +26,12 @@ public class PlayerSpawnS2CPacket() : Packet(PacketId.PlayerSpawnS2C)
         p.zPosition = MathHelper.Floor(ent.z * 32.0D);
         p.rotation = (sbyte)(int)(ent.yaw * 256.0F / 360.0F);
         p.pitch = (sbyte)(int)(ent.pitch * 256.0F / 360.0F);
-        ItemStack itemStack = ent.inventory.getSelectedItem();
+        ItemStack itemStack = ent.inventory.GetItemInHand();
         p.currentItem = itemStack == null ? 0 : itemStack.itemId;
         return p;
     }
 
-    public override void Read(NetworkStream stream)
+    public override void Read(Stream stream)
     {
         entityId = stream.ReadInt();
         name = stream.ReadLongString(16);
@@ -43,7 +43,7 @@ public class PlayerSpawnS2CPacket() : Packet(PacketId.PlayerSpawnS2C)
         currentItem = stream.ReadShort();
     }
 
-    public override void Write(NetworkStream stream)
+    public override void Write(Stream stream)
     {
         stream.WriteInt(entityId);
         stream.WriteLongString(name);

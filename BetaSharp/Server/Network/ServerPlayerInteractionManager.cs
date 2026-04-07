@@ -162,7 +162,7 @@ public class ServerPlayerInteractionManager
         if (success && player.GameMode.BlockDrops && player.canHarvest(Block.Blocks[blockId]))
         {
             Block.Blocks[blockId].onAfterBreak(new OnAfterBreakEvent(world, player, blockMeta, x, y, z));
-            ((ServerPlayerEntity)player).networkHandler.sendPacket(BlockUpdateS2CPacket.Get(x, y, z, world));
+            ((ServerPlayerEntity)player).NetworkHandler.SendPacket(BlockUpdateS2CPacket.Get(x, y, z, world));
         }
 
         ItemStack itemStack = player.getHand();
@@ -203,7 +203,8 @@ public class ServerPlayerInteractionManager
 
     public bool interactBlock(EntityPlayer player, World world, ItemStack? stack, int x, int y, int z, int side)
     {
-        if (!player.isSneaking()) {
+        if (!player.isSneaking())
+        {
             if (!player.GameMode.CanInteract) return false;
             int blockId = world.Reader.GetBlockId(x, y, z);
             if (blockId > 0 && Block.Blocks[blockId].onUse(new OnUseEvent(world, player, x, y, z)))

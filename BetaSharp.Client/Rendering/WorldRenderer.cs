@@ -296,7 +296,7 @@ public class WorldRenderer : IWorldEventListener
             DeltaTime = _game.Timer.DeltaTime,
             EnvironmentAnimation = _game.Options.EnvironmentAnimation,
             ChunkFade = _game.Options.ChunkFade,
-            RenderOccluded = _game.Options.RenderOccluded
+            RenderOccluded = false
         };
 
         if (pass == 0)
@@ -434,12 +434,13 @@ public class WorldRenderer : IWorldEventListener
 
     public void RenderClouds(float var1)
     {
-        Profiler.Start("renderClouds");
-        if (!_game.World.Dimension.IsNether)
+        using (Profiler.Begin("RenderClouds"))
         {
-            RenderCloudsFancy(var1);
+            if (!_game.World.Dimension.IsNether)
+            {
+                RenderCloudsFancy(var1);
+            }
         }
-        Profiler.Stop("renderClouds");
     }
 
     private void BuildCloudDisplayLists()
@@ -896,7 +897,7 @@ public class WorldRenderer : IWorldEventListener
                 if (var16 > 0)
                 {
                     Block blockId = Block.Blocks[var16];
-                    _game.SoundManager.PlaySound(blockId.soundGroup.BreakSound, var3 + 0.5F, var4 + 0.5F, var5 + 0.5F, (blockId.soundGroup.Volume + 1.0F) / 2.0F, blockId.soundGroup.Pitch * 0.8F);
+                    _game.SoundManager.PlaySound(blockId.SoundGroup.BreakSound, var3 + 0.5F, var4 + 0.5F, var5 + 0.5F, (blockId.SoundGroup.Volume + 1.0F) / 2.0F, blockId.SoundGroup.Pitch * 0.8F);
                 }
 
                 _game.ParticleManager.addBlockDestroyEffects(var3, var4, var5, var6 & 255, var6 >> 8 & 255);

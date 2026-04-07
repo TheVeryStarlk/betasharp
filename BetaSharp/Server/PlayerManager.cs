@@ -109,48 +109,55 @@ public class PlayerManager
         GetChunkMap(player.dimensionId).removePlayer(player);
     }
 
-    public ServerPlayerEntity connectPlayer(ServerLoginNetworkHandler loginNetworkHandler, string name)
+    public ServerPlayerEntity? connectPlayer(ServerLoginNetworkHandler loginNetworkHandler, string name)
     {
+        try
+        {
+            PlayerNameValidator.Validate(name);
+        }
+        catch (InvalidPlayerNameException ex)
+        {
+            loginNetworkHandler.disconnect($"Kicked: {ex.Message}");
+            return null;
+        }
+
         if (bannedPlayers.Contains(name.Trim().ToLower()))
         {
             loginNetworkHandler.disconnect("You are banned from this server!");
             return null;
         }
-        else if (!isWhitelisted(name))
+
+        if (!isWhitelisted(name))
         {
             loginNetworkHandler.disconnect("You are not white-listed on this server!");
             return null;
         }
-        else
-        {
-            // TODO: This does not work with IPEndpoint's ToString
-            string var3 = loginNetworkHandler.connection.getAddress().ToString();
-            var3 = var3.Substring(var3.IndexOf("/") + 1);
-            var3 = var3.Substring(0, var3.IndexOf(":"));
-            if (bannedIps.Contains(var3))
-            {
-                loginNetworkHandler.disconnect("Your IP address is banned from this server!");
-                return null;
-            }
-            else if (players.Count >= _maxPlayerCount)
-            {
-                loginNetworkHandler.disconnect("The server is full!");
-                return null;
-            }
-            else
-            {
-                for (int var4 = 0; var4 < players.Count; var4++)
-                {
-                    ServerPlayerEntity var5 = players[var4];
-                    if (var5.name.EqualsIgnoreCase(name))
-                    {
-                        var5.networkHandler.disconnect("You logged in from another location");
-                    }
-                }
 
-                return new ServerPlayerEntity(_server, _server.getWorld(0), name, new ServerPlayerInteractionManager(_server.getWorld(0)));
+        // TODO: This does not work with IPEndpoint's ToString
+        string address = loginNetworkHandler.connection.getAddress().ToString();
+        address = address.Substring(address.IndexOf("/") + 1);
+        address = address.Substring(0, address.IndexOf(":"));
+        if (bannedIps.Contains(address))
+        {
+            loginNetworkHandler.disconnect("Your IP address is banned from this server!");
+            return null;
+        }
+
+        if (players.Count >= _maxPlayerCount)
+        {
+            loginNetworkHandler.disconnect("The server is full!");
+            return null;
+        }
+
+        foreach (var playerEntity in players)
+        {
+            if (playerEntity.name.EqualsIgnoreCase(name))
+            {
+                playerEntity.NetworkHandler.disconnect("You logged in from another location");
             }
         }
+
+        return new ServerPlayerEntity(_server, _server.getWorld(0), name, new ServerPlayerInteractionManager(_server.getWorld(0)));
     }
 
     public ServerPlayerEntity respawnPlayer(ServerPlayerEntity player, int dimensionId)
@@ -167,7 +174,7 @@ public class PlayerManager
         )
         {
             id = player.id,
-            networkHandler = player.networkHandler
+            NetworkHandler = player.NetworkHandler
         };
         ServerWorld var5 = _server.getWorld(player.dimensionId);
         if (var3 is (int x, int y, int z))
@@ -181,7 +188,7 @@ public class PlayerManager
             }
             else
             {
-                serverPlayer.networkHandler.sendPacket(GameStateChangeS2CPacket.Get(0));
+                serverPlayer.NetworkHandler.SendPacket(GameStateChangeS2CPacket.Get(0));
             }
         }
 
@@ -192,8 +199,8 @@ public class PlayerManager
             serverPlayer.setPosition(serverPlayer.x, serverPlayer.y + 1.0, serverPlayer.z);
         }
 
-        serverPlayer.networkHandler.sendPacket(PlayerRespawnPacket.Get((sbyte)serverPlayer.dimensionId));
-        serverPlayer.networkHandler.teleport(serverPlayer.x, serverPlayer.y, serverPlayer.z, serverPlayer.yaw, serverPlayer.pitch);
+        serverPlayer.NetworkHandler.SendPacket(PlayerRespawnPacket.Get((sbyte)serverPlayer.dimensionId));
+        serverPlayer.NetworkHandler.teleport(serverPlayer.x, serverPlayer.y, serverPlayer.z, serverPlayer.yaw, serverPlayer.pitch);
         sendWorldInfo(serverPlayer, var5);
         GetChunkMap(serverPlayer.dimensionId).addPlayer(serverPlayer);
         var5.SpawnEntity(serverPlayer);
@@ -233,7 +240,7 @@ public class PlayerManager
         GetChunkMap(sourceDim).removePlayer(player);
 
         player.dimensionId = targetDim;
-        player.networkHandler.sendPacket(PlayerRespawnPacket.Get((sbyte)player.dimensionId));
+        player.NetworkHandler.SendPacket(PlayerRespawnPacket.Get((sbyte)player.dimensionId));
         currentWorld.Entities.ServerRemove(player);
         player.dead = false;
         double x = player.x;
@@ -276,7 +283,7 @@ public class PlayerManager
         }
 
         updatePlayerAfterDimensionChange(player);
-        player.networkHandler.teleport(player.x, player.y, player.z, player.yaw, player.pitch);
+        player.NetworkHandler.teleport(player.x, player.y, player.z, player.yaw, player.pitch);
         player.setWorld(targetWorld);
         sendWorldInfo(player, targetWorld);
         sendPlayerStatus(player);
@@ -316,7 +323,7 @@ public class PlayerManager
         for (int var2 = 0; var2 < players.Count; var2++)
         {
             ServerPlayerEntity var3 = players[var2];
-            var3.networkHandler.sendPacket(packet);
+            var3.NetworkHandler.SendPacket(packet);
         }
         packet.Return();
     }
@@ -328,7 +335,7 @@ public class PlayerManager
             ServerPlayerEntity var4 = players[var3];
             if (var4.dimensionId == dimensionId)
             {
-                var4.networkHandler.sendPacket(packet);
+                var4.NetworkHandler.SendPacket(packet);
             }
         }
         packet.Return();
@@ -437,7 +444,7 @@ public class PlayerManager
         ServerPlayerEntity var3 = getPlayer(name);
         if (var3 != null)
         {
-            var3.networkHandler.sendPacket(ChatMessagePacket.Get(message));
+            var3.NetworkHandler.SendPacket(ChatMessagePacket.Get(message));
         }
     }
 
@@ -458,7 +465,7 @@ public class PlayerManager
                 double var18 = z - var13.z;
                 if (var14 * var14 + var16 * var16 + var18 * var18 < range * range)
                 {
-                    var13.networkHandler.sendPacket(packet);
+                    var13.NetworkHandler.SendPacket(packet);
                 }
             }
         }
@@ -477,7 +484,7 @@ public class PlayerManager
         {
             if (isOperator(player.name))
             {
-                player.networkHandler.sendPacket(chatMessagePacket);
+                player.NetworkHandler.SendPacket(chatMessagePacket);
             }
         }
 
@@ -489,7 +496,7 @@ public class PlayerManager
         ServerPlayerEntity var3 = getPlayer(player);
         if (var3 != null)
         {
-            var3.networkHandler.sendPacket(packet);
+            var3.NetworkHandler.SendPacket(packet);
             return true;
         }
         else
@@ -535,10 +542,10 @@ public class PlayerManager
 
     public void sendWorldInfo(ServerPlayerEntity player, ServerWorld world)
     {
-        player.networkHandler.sendPacket(WorldTimeUpdateS2CPacket.Get(world.GetTime()));
+        player.NetworkHandler.SendPacket(WorldTimeUpdateS2CPacket.Get(world.GetTime()));
         if (world.Properties.IsRaining)
         {
-            player.networkHandler.sendPacket(GameStateChangeS2CPacket.Get(1));
+            player.NetworkHandler.SendPacket(GameStateChangeS2CPacket.Get(1));
         }
     }
 

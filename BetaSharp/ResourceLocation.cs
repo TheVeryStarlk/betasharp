@@ -2,15 +2,19 @@ namespace BetaSharp;
 
 public sealed partial class ResourceLocation : IEquatable<ResourceLocation>, IComparable<ResourceLocation>
 {
-    public string Namespace { get; }
+    public Namespace Namespace { get; }
     public string Path { get; }
-
-    public static readonly string DefaultNamespace = "betasharp";
 
     public ResourceLocation(string @namespace, string path)
     {
-        Validate(@namespace, nameof(@namespace));
-        Validate(path, nameof(path));
+        Validate256(path, nameof(path));
+        Namespace = Namespace.Get(@namespace);
+        Path = path;
+    }
+
+    public ResourceLocation(Namespace @namespace, string path)
+    {
+        Validate256(path, nameof(path));
         Namespace = @namespace;
         Path = path;
     }
@@ -24,7 +28,7 @@ public sealed partial class ResourceLocation : IEquatable<ResourceLocation>, ICo
         int colon = location.IndexOf(':');
         return colon switch
         {
-            -1 => new ResourceLocation(DefaultNamespace, location),
+            -1 => new ResourceLocation(Namespace.BetaSharp, location),
             0 => throw new FormatException($"Missing namespace in '{location}'."),
             _ => new ResourceLocation(location[..colon], location[(colon + 1)..])
         };
@@ -39,7 +43,14 @@ public sealed partial class ResourceLocation : IEquatable<ResourceLocation>, ICo
     private static readonly System.Text.RegularExpressions.Regex s_validPattern =
         Reg();
 
-    private static void Validate(string part, string paramName)
+    internal static void Validate256(string part, string paramName)
+    {
+        if (part.Length > 256)
+            throw new ArgumentException("Must not exceed 256 characters", paramName);
+        Validate(part, paramName);
+    }
+
+    internal static void Validate(string part, string paramName)
     {
         if (string.IsNullOrEmpty(part))
             throw new ArgumentException("Must not be null or empty.", paramName);
@@ -50,7 +61,7 @@ public sealed partial class ResourceLocation : IEquatable<ResourceLocation>, ICo
 
     public bool Equals(ResourceLocation? other) =>
         other is not null &&
-        Namespace == other.Namespace &&
+        Namespace.Equals(other.Namespace) &&
         Path == other.Path;
 
     public override bool Equals(object? obj) => Equals(obj as ResourceLocation);
@@ -77,7 +88,7 @@ public sealed partial class ResourceLocation : IEquatable<ResourceLocation>, ICo
 
     public ResourceLocation Append(string child) => new(Namespace, $"{Path}/{child}");
 
-    public bool IsVanilla => Namespace == DefaultNamespace;
+    public bool IsVanilla => Namespace.GetHashCode() == Namespace.BetaSharp.GetHashCode();
 
     [System.Text.RegularExpressions.GeneratedRegex(@"^[a-z0-9_\-\.]+$", System.Text.RegularExpressions.RegexOptions.Compiled)]
     private static partial System.Text.RegularExpressions.Regex Reg();

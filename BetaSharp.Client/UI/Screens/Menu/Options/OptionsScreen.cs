@@ -1,4 +1,3 @@
-using BetaSharp.Client.Debug;
 using BetaSharp.Client.Guis;
 using BetaSharp.Client.Options;
 using BetaSharp.Client.UI.Controls.Core;
@@ -7,8 +6,7 @@ namespace BetaSharp.Client.UI.Screens.Menu.Options;
 
 public class OptionsScreen(
     UIContext context,
-    UIScreen? parent,
-    DebugComponentsStorage debugStorage) : BaseOptionsScreen(context, parent, "options.title")
+    UIScreen? parent) : BaseOptionsScreen(context, parent, "options.title")
 {
     protected override IEnumerable<GameOption> GetOptions() => Options.MainScreenOptions;
 
@@ -54,9 +52,9 @@ public class OptionsScreen(
         }
 
         AddSubButton(translations.TranslateKey("options.video"), () => Context.Navigator.Navigate(new VideoSettingsScreen(Context, this)));
+        AddSubButton("UI Settings", () => Context.Navigator.Navigate(new UISettingsScreen(Context, this)));
         AddSubButton("Audio Settings", () => Context.Navigator.Navigate(new AudioSettingsScreen(Context, this)));
         AddSubButton(translations.TranslateKey("options.controls"), () => Context.Navigator.Navigate(new AllControlsScreen(Context, this)));
-        AddSubButton("Debug Options...", () => Context.Navigator.Navigate(new DebugOptionsScreen(Context, this, debugStorage)));
 
         return list;
     }

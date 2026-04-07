@@ -1,5 +1,6 @@
-﻿using BetaSharp.Entities;
+using BetaSharp.Entities;
 using BetaSharp.Network.Packets.S2CPlay;
+using BetaSharp.Registries;
 using BetaSharp.Server.Command;
 using Microsoft.Extensions.Logging;
 
@@ -49,44 +50,31 @@ public class GameModeCommand : ICommand
         }
     }
 
-    private void ListGameModes(ICommand.CommandContext c)
+    private static void ListGameModes(ICommand.CommandContext c)
     {
-        int i = 0;
-        while (GameModes.TryGet(i, out var gameMode))
+        var registry = c.Server.RegistryAccess.GetOrThrow(RegistryKeys.GameModes);
+        foreach (var key in registry.Keys)
         {
-            c.Output.SendMessage(i.ToString().PadRight(2) + " " + gameMode.Name);
-            i++;
+            c.Output.SendMessage(key.ToString());
         }
     }
 
-    private void SetGameMode(ServerPlayerEntity p, string arg, ICommand.CommandContext c)
+    private static void SetGameMode(ServerPlayerEntity p, string arg, ICommand.CommandContext c)
     {
-        // mode by id
-        if (int.TryParse(arg, out int mode))
+        if (c.Server.RegistryAccess.GetOrThrow(RegistryKeys.GameModes).AsAssetLoader().TryGetHolderByPrefix(arg, out Holder<GameMode>? holder))
         {
-            if (GameModes.TryGet(mode, out var gameMode))
-            {
-                SetGameMode(p, gameMode, c);
-                return;
-            }
+            SetGameMode(p, holder, c);
+            return;
         }
-        // mode by name
-        else
-        {
-            if (GameModes.TryGet(arg, out var gameMode, true))
-            {
-                SetGameMode(p, gameMode, c);
-                return;
-            }
-        }
+
         c.Output.SendMessage("Gamemode not found.");
     }
 
-    private void SetGameMode(ServerPlayerEntity p, GameMode gameMode, ICommand.CommandContext c)
+    private static void SetGameMode(ServerPlayerEntity p, Holder<GameMode> holder, ICommand.CommandContext c)
     {
-        p.networkHandler.sendPacket(PlayerGameModeUpdateS2CPacket.Get(gameMode));
-        p.GameMode = gameMode;
-        string s = $"{p.name} game mode set to {gameMode.Name}.";
+        p.GameModeHolder = holder;
+        p.NetworkHandler.SendPacket(PlayerGameModeUpdateS2CPacket.Get(holder.Value));
+        string s = $"{p.name} game mode set to {holder.Value.Name}.";
         s_logger.LogInformation(s);
         c.Output.SendMessage(s);
     }
