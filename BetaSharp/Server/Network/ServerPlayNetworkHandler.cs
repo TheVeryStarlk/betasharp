@@ -66,6 +66,7 @@ public class ServerPlayNetworkHandler : NetHandler, ICommandOutput
             PlayerConnectionUpdateS2CPacket.ConnectionUpdateType.Leave,
             player.name
         ));
+        _ = Discord.Channel!.SendMessageAsync($"{player.name} joined the game.");
         server.playerManager.sendToAll(ChatMessagePacket.Get("§e" + player.name + " left the game."));
         disconnected = true;
     }
