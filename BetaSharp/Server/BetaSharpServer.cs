@@ -308,6 +308,22 @@ public abstract class BetaSharpServer : ICommandOutput
         {
             if (Init())
             {
+                Discord.Client?.MessageCreated += async (_, eventArgs) =>
+                {
+                    if (eventArgs.MentionedUsers.Any(user => user.IsCurrent))
+                    {
+                        await eventArgs.Message.RespondAsync("Join 20.19.33.224");
+                        return;
+                    }
+
+                    if (eventArgs.Message.Author.IsCurrent || eventArgs.Channel.Id != Discord.Id)
+                    {
+                        return;
+                    }
+
+                    playerManager.sendToAll(ChatMessagePacket.Get($"<{eventArgs.Author.Username} Discord> {eventArgs.Message.Content}"));
+                };
+
                 long lastTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 long accumulatedTime = 0L;
                 _lastTpsTime = lastTime;
