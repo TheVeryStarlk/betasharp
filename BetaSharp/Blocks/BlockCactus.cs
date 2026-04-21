@@ -37,9 +37,9 @@ internal class BlockCactus : Block
 
     public override int GetTexture(Side side) => side switch
     {
-        Side.Up => TextureId - 1,
-        Side.Down => TextureId + 1,
-        _ => TextureId
+        Side.Up => BlockTextures.CactusTop,
+        Side.Down => BlockTextures.CactusBottom,
+        _ => BlockTextures.CactusSide
     };
 
     public override bool isFullCube() => false;
@@ -70,5 +70,5 @@ internal class BlockCactus : Block
         return blockBelowId == Cactus.id || blockBelowId == Sand.id;
     }
 
-    public override void onEntityCollision(OnEntityCollisionEvent ctx) => ctx.Entity.damage(null, 1);
+    public override void onEntityCollision(OnEntityCollisionEvent ctx) => ctx.Entity.Damage(null, 1);
 }

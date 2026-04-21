@@ -22,7 +22,7 @@ internal class BlockFurnace : BlockWithEntity
     public BlockFurnace(int id, bool lit) : base(id, Material.Stone)
     {
         _lit = lit;
-        TextureId = 45;
+        TextureId = BlockTextures.FurnaceSide;
     }
 
     public override int getDroppedItemId(int blockMeta) => Furnace.id;
@@ -33,7 +33,7 @@ internal class BlockFurnace : BlockWithEntity
 
         if (@event.Placer != null)
         {
-            int direction = MathHelper.Floor(@event.Placer.yaw * 4.0F / 360.0F + 0.5D) & 3;
+            int direction = MathHelper.Floor(@event.Placer.Yaw * 4.0F / 360.0F + 0.5D) & 3;
 
             int meta = direction switch
             {
@@ -57,7 +57,7 @@ internal class BlockFurnace : BlockWithEntity
         }
     }
 
-    private void updateDirection(OnPlacedEvent @event)
+    private static void updateDirection(OnPlacedEvent @event)
     {
         if (@event.World.IsRemote) return;
 
@@ -77,16 +77,15 @@ internal class BlockFurnace : BlockWithEntity
         if (isWestOpaque && !isEastOpaque) direction = 5;
         else if (isEastOpaque && !isWestOpaque) direction = 4;
 
-
         @event.World.Writer.SetBlockMeta(x, y, z, direction);
     }
 
     public override int GetTextureId(IBlockReader iBlockReader, int x, int y, int z, Side side)
     {
-        if (side is Side.Up or Side.Down) return TextureId + 17;
+        if (side is Side.Up or Side.Down) return BlockTextures.FurnaceTop;
 
         Side meta = iBlockReader.GetBlockMeta(x, y, z).ToSide();
-        return side != meta ? TextureId : _lit ? TextureId + 16 : TextureId - 1;
+        return side != meta ? TextureId : _lit ? BlockTextures.FurnaceFrontLit : BlockTextures.FurnaceFrontUnlit;
     }
 
 
@@ -123,9 +122,9 @@ internal class BlockFurnace : BlockWithEntity
 
     public override int GetTexture(Side side) => side switch
     {
-        Side.Up or Side.Down => TextureId + 17,
-        Side.South => TextureId - 1,
-        _ => TextureId
+        Side.Up or Side.Down => BlockTextures.FurnaceTop,
+        Side.South => BlockTextures.FurnaceFrontUnlit,
+        _ => BlockTextures.FurnaceSide
     };
 
     public override bool onUse(OnUseEvent @event)
@@ -166,26 +165,26 @@ internal class BlockFurnace : BlockWithEntity
                 return;
             }
 
-            for (int slotIndex = 0; slotIndex < furnace.size(); ++slotIndex)
+            for (int slotIndex = 0; slotIndex < furnace.Size; ++slotIndex)
             {
-                ItemStack? stack = furnace.getStack(slotIndex);
+                ItemStack? stack = furnace.GetStack(slotIndex);
                 if (stack == null) continue;
 
                 float offsetX = s_random.NextFloat() * 0.8F + 0.1F;
                 float offsetY = s_random.NextFloat() * 0.8F + 0.1F;
                 float offsetZ = s_random.NextFloat() * 0.8F + 0.1F;
 
-                while (stack.count > 0)
+                while (stack.Count > 0)
                 {
                     int stackCount = s_random.NextInt(21) + 10;
-                    if (stackCount > stack.count) stackCount = stack.count;
+                    if (stackCount > stack.Count) stackCount = stack.Count;
 
-                    stack.count -= stackCount;
-                    EntityItem droppedItem = new(@event.World, @event.X + offsetX, @event.Y + offsetY, @event.Z + offsetZ, new ItemStack(stack.itemId, stackCount, stack.getDamage()))
+                    stack.Count -= stackCount;
+                    EntityItem droppedItem = new(@event.World, @event.X + offsetX, @event.Y + offsetY, @event.Z + offsetZ, new ItemStack(stack.ItemId, stackCount, stack.getDamage()))
                     {
-                        velocityX = (float)s_random.NextGaussian() * DropSpread,
-                        velocityY = (float)s_random.NextGaussian() * DropSpread + 0.2F,
-                        velocityZ = (float)s_random.NextGaussian() * DropSpread
+                        VelocityX = (float)s_random.NextGaussian() * DropSpread,
+                        VelocityY = (float)s_random.NextGaussian() * DropSpread + 0.2F,
+                        VelocityZ = (float)s_random.NextGaussian() * DropSpread
                     };
                     @event.World.SpawnEntity(droppedItem);
                 }

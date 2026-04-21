@@ -1,6 +1,7 @@
 using BetaSharp.Blocks;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
+using BetaSharp.Worlds.Chunks;
 using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Items;
@@ -54,7 +55,7 @@ internal class ItemBlock : Item
             }
         }
 
-        if (itemStack.count == 0)
+        if (itemStack.Count == 0)
         {
             return false;
         }
@@ -65,7 +66,7 @@ internal class ItemBlock : Item
             return false;
         }
 
-        if (y == 127 && Block.Blocks[blockID].material.IsSolid)
+        if (y >= ChuckFormat.WorldHeight)
         {
             return false;
         }
@@ -75,7 +76,7 @@ internal class ItemBlock : Item
         if (collisionBox is { } box)
         {
             List<Entity> entitiesInBox = world.Entities.CollectEntitiesOfType<Entity>(box);
-            bool hasBlockingEntity = entitiesInBox.Any(entity => entity.preventEntitySpawning);
+            bool hasBlockingEntity = entitiesInBox.Any(entity => entity.PreventEntitySpawning);
             if (hasBlockingEntity)
             {
                 return false;
